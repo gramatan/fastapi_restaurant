@@ -4,22 +4,26 @@ services:
   db:
     container_name: ylab_postgres
     image: postgres:latest
+    restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
       - POSTGRES_USER=ylab
       - POSTGRES_PASSWORD=no_secure_password
       - POSTGRES_DB=resto
+    ports:
+      - "5432:5432"
 
   web:
     build: .
-    command: uvicorn app.main:app --host 0.0.0.0 --port 80
+    command: uvicorn app.main:app --host 0.0.0.0 --port 80 --reload
     volumes:
       - .:/app
     ports:
       - "8000:80"
     depends_on:
       - db
+
 
 volumes:
   postgres_data:
