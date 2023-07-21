@@ -1,3 +1,4 @@
+import logging
 from sqlalchemy import Column, Integer, String, ForeignKey, Numeric
 from sqlalchemy.orm import relationship
 
@@ -44,10 +45,15 @@ class Dish(Base):
 
 
 def create_tables():
-    import logging
-    logging.basicConfig(level=logging.INFO)
     logging.info("Creating tables")
     SQLALCHEMY_DATABASE_URL = "postgresql://ylab:no_secure_password@localhost/resto"
     engine = create_engine(SQLALCHEMY_DATABASE_URL)
     Base.metadata.create_all(bind=engine)
     logging.info("Tables created")
+
+def drop_tables():
+    logging.info("Dropping tables")
+    SQLALCHEMY_DATABASE_URL = "postgresql://ylab:no_secure_password@localhost/resto"
+    engine = create_engine(SQLALCHEMY_DATABASE_URL)
+    Base.metadata.drop_all(bind=engine)
+    logging.info("Tables dropped")
