@@ -5,12 +5,13 @@ class MenuBase(BaseModel):
     title: str
     description: str
 
-
 class MenuCreate(MenuBase):
     pass
 
+class MenuUpdate(MenuBase):
+    pass
 
-class Menu(MenuBase):
+class S_Menu(MenuBase):
     id: int
 
     class Config:
