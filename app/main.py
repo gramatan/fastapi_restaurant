@@ -5,10 +5,12 @@ from typing import List
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 
-from app.database.base import SessionLocal, Menu
+from app.crud.submenu import read_submenus, create_submenu, read_submenu, update_submenu, del_submenu
+from app.database.base import SessionLocal
 from app.schemas.menu import MenuCreate, MenuUpdate, S_Menu
 
 from app.crud import create_menu, read_menu, update_menu, read_menus, del_menu
+from app.schemas.submenu import SchemasSubMenu, SubMenuUpdate, SubMenuCreate
 
 logging.basicConfig(level=logging.INFO)
 
@@ -49,5 +51,29 @@ def patch_menu(menu_id: int, menu: MenuUpdate, db: Session = Depends(get_db)) ->
 @app.delete("/api/v1/menus/{menu_id}")
 def delete_menu(menu_id: int, db: Session = Depends(get_db)):
     return del_menu(db, menu_id)
+
+
+# All about our Submenus:
+@app.get("/api/v1/menus/{menu_id}/submenus")
+def get_submenus(menu_id: int, db: Session = Depends(get_db)) -> List[SchemasSubMenu]:
+    submenus = read_submenus(db, menu_id)
+    return submenus
+
+@app.post("/api/v1/menus/{menu_id}/submenus", status_code=201)
+def post_submenu(submenu: SubMenuCreate, menu_id: int, db: Session = Depends(get_db)) -> SchemasSubMenu:
+    db_submenu = create_submenu(db, submenu, menu_id)
+    return db_submenu
+
+@app.get("/api/v1/menus/{menu_id}/submenus/{submenu_id}")
+def get_submenu(menu_id: int, submenu_id: int, db: Session = Depends(get_db)) -> SchemasSubMenu:
+    return read_submenu(db, submenu_id)
+
+@app.patch("/api/v1/menus/{menu_id}/submenus/{submenu_id}")
+def patch_submenu(submenu_id: int, submenu: SubMenuUpdate, menu_id: int, db: Session = Depends(get_db)) -> SchemasSubMenu:
+    return update_submenu(db, submenu_id, submenu)
+
+@app.delete("/api/v1/menus/{menu_id}/submenus/{submenu_id}")
+def delete_submenu(menu_id: int, submenu_id: int, db: Session = Depends(get_db)):
+    return del_submenu(db, submenu_id)
 
 
