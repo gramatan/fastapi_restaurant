@@ -16,6 +16,7 @@ class SubMenuUpdate(SubMenuBase):
 
 class SchemasSubMenu(SubMenuBase):
     id: str | int
+    dish_count: int = 0
 
     class Config:
         from_attributes = True

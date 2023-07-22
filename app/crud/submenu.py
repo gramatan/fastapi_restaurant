@@ -1,13 +1,16 @@
 from fastapi import HTTPException
 from sqlalchemy import delete
 from sqlalchemy.orm import Session
-from app.database.base import SubMenu
+from app.database.base import SubMenu, Dish
 from app.schemas.submenu import SubMenuCreate, SchemasSubMenu, SubMenuUpdate
 import logging
 
 
 def read_submenus(db: Session, menu_id: int):
-    return db.query(SubMenu).filter(SubMenu.menu_id == menu_id).all()
+    submenus = db.query(SubMenu).filter(SubMenu.menu_id == menu_id).all()
+    for submenu in submenus:
+        submenu.dish_count = db.query(Dish).filter(Dish.submenu_id == submenu.id).count()
+    return submenus
 
 
 def create_submenu(db: Session, submenu: SubMenuCreate, menu_id: int):
