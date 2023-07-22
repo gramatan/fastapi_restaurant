@@ -6,7 +6,7 @@ from app.schemas.dish import DishBase, DishResponse
 import logging
 logging.basicConfig(level=logging.INFO)
 
-def read_dishes(db: Session) -> list:
+def read_dishes(db: Session):
     return db.query(Dish).all()
 
 def create_dish(db: Session, dish: DishBase, submenu_id: int) -> DishResponse:
