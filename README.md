@@ -45,7 +45,7 @@ docker-compose up
 ```bash
 python create_tables.py
 ```
-7. Если вы выбрали остновку docker-compose, то запустите его снова:
+7. Если вы выбрали остановку docker-compose, то запустите его снова:
 
 ```bash
 docker-compose up
