@@ -9,10 +9,10 @@ from app.crud.dish import del_dish, update_dish, read_dish, create_dish, read_di
 from app.crud.submenu import read_submenus, create_submenu, read_submenu, update_submenu, del_submenu
 from app.database.base import SessionLocal
 from app.schemas.dish import DishBase, DishResponse
-from app.schemas.menu import MenuCreate, MenuUpdate, S_Menu
+from app.schemas.menu import MenuCreate, MenuUpdate, MenuResponse
 
 from app.crud import create_menu, read_menu, update_menu, read_menus, del_menu
-from app.schemas.submenu import SchemasSubMenu, SubMenuUpdate, SubMenuCreate
+from app.schemas.submenu import SubMenuResponse, SubMenuBase
 
 logging.basicConfig(level=logging.INFO)
 
@@ -29,24 +29,24 @@ def get_db():
 
 # All about our Menus:
 @app.get("/api/v1/menus")
-def get_menus(db: Session = Depends(get_db)) -> List[S_Menu]:
+def get_menus(db: Session = Depends(get_db)) -> List[MenuResponse]:
     menus = read_menus(db)
     return menus
 
 
 @app.post("/api/v1/menus", status_code=201)
-def post_menu(menu: MenuCreate, db: Session = Depends(get_db)) -> S_Menu:
+def post_menu(menu: MenuCreate, db: Session = Depends(get_db)) -> MenuResponse:
     db_menu = create_menu(db, menu)
     return db_menu
 
 
 @app.get("/api/v1/menus/{menu_id}")
-def get_menu(menu_id: int | str, db: Session = Depends(get_db)) -> S_Menu:
+def get_menu(menu_id: int | str, db: Session = Depends(get_db)) -> MenuResponse:
     return read_menu(db, menu_id)
 
 
 @app.patch("/api/v1/menus/{menu_id}")
-def patch_menu(menu_id: int, menu: MenuUpdate, db: Session = Depends(get_db)) -> S_Menu:
+def patch_menu(menu_id: int, menu: MenuUpdate, db: Session = Depends(get_db)) -> MenuResponse:
     return update_menu(db, menu_id, menu)
 
 
@@ -55,26 +55,27 @@ def delete_menu(menu_id: int, db: Session = Depends(get_db)):
     return del_menu(db, menu_id)
 
 
-# All about our Submenus:
+# All about our Submenus. menu_id is not used in some handlers because of consecutive numbering,
+# but we will keep it for further tasks:
 @app.get("/api/v1/menus/{menu_id}/submenus")
-def get_submenus(menu_id: int, db: Session = Depends(get_db)) -> List[SchemasSubMenu]:
+def get_submenus(menu_id: int, db: Session = Depends(get_db)) -> List[SubMenuResponse]:
     submenus = read_submenus(db, menu_id)
     return submenus
 
 
 @app.post("/api/v1/menus/{menu_id}/submenus", status_code=201)
-def post_submenu(submenu: SubMenuCreate, menu_id: int, db: Session = Depends(get_db)) -> SchemasSubMenu:
+def post_submenu(submenu: SubMenuBase, menu_id: int, db: Session = Depends(get_db)) -> SubMenuResponse:
     db_submenu = create_submenu(db, submenu, menu_id)
     return db_submenu
 
 
 @app.get("/api/v1/menus/{menu_id}/submenus/{submenu_id}")
-def get_submenu(menu_id: int, submenu_id: int, db: Session = Depends(get_db)) -> SchemasSubMenu:
+def get_submenu(menu_id: int, submenu_id: int, db: Session = Depends(get_db)) -> SubMenuResponse:
     return read_submenu(db, submenu_id)
 
 
 @app.patch("/api/v1/menus/{menu_id}/submenus/{submenu_id}")
-def patch_submenu(submenu_id: int, submenu: SubMenuUpdate, menu_id: int, db: Session = Depends(get_db)) -> SchemasSubMenu:
+def patch_submenu(submenu_id: int, submenu: SubMenuBase, menu_id: int, db: Session = Depends(get_db)) -> SubMenuResponse:
     return update_submenu(db, submenu_id, submenu)
 
 
@@ -85,7 +86,7 @@ def delete_submenu(menu_id: int, submenu_id: int, db: Session = Depends(get_db))
 
 # All about our Dishes:
 @app.get("/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes")
-def get_dishes(db: Session = Depends(get_db)) -> list:
+def get_dishes(db: Session = Depends(get_db)):
     dishes = read_dishes(db)
     return dishes
 

@@ -6,17 +6,9 @@ class SubMenuBase(BaseModel):
     description: str
 
 
-class SubMenuCreate(SubMenuBase):
-    pass
-
-
-class SubMenuUpdate(SubMenuBase):
-    pass
-
-
-class SchemasSubMenu(SubMenuBase):
+class SubMenuResponse(SubMenuBase):
     id: str | int
-    dish_count: int = 0
+    dishes_count: int = 0
 
     class Config:
         from_attributes = True
