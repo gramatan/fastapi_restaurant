@@ -62,6 +62,7 @@ def del_submenu(db: Session, submenu_id: int) -> dict:
 
     db_menu = db.query(Menu).get(submenu.menu_id)
     db_menu.submenus_count -= 1
+    db_menu.dishes_count -= submenu.dishes_count
     db.commit()
 
     db.execute(delete(SubMenu).where(SubMenu.id == submenu_id))
