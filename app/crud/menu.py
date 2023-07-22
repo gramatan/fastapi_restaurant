@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from sqlalchemy import delete
 from sqlalchemy.orm import Session
 from app.database.base import Menu, SubMenu, Dish
-from app.schemas.menu import MenuCreate, S_Menu, MenuUpdate
+from app.schemas.menu import MenuCreate, MenuResponse, MenuUpdate
 import logging
 
 
@@ -23,7 +23,7 @@ def create_menu(db: Session, menu: MenuCreate):
     db_menu_dict = db_menu.__dict__
     db_menu_dict["id"] = str(db_menu_dict["id"])
 
-    return S_Menu(**db_menu_dict)
+    return MenuResponse(**db_menu_dict)
 
 
 def read_menu(db: Session, menu_id: int):
@@ -35,7 +35,7 @@ def read_menu(db: Session, menu_id: int):
 
 
 # Для update_menu:
-def update_menu(db: Session, menu_id: int, menu: MenuUpdate) -> S_Menu:
+def update_menu(db: Session, menu_id: int, menu: MenuUpdate) -> MenuResponse:
     db_menu = db.get(Menu, menu_id)
     if db_menu is None:
         raise HTTPException(status_code=404, detail="menu not found")

@@ -9,7 +9,7 @@ from app.crud.dish import del_dish, update_dish, read_dish, create_dish, read_di
 from app.crud.submenu import read_submenus, create_submenu, read_submenu, update_submenu, del_submenu
 from app.database.base import SessionLocal
 from app.schemas.dish import DishBase, DishResponse
-from app.schemas.menu import MenuCreate, MenuUpdate, MenuResponse
+from app.schemas.menu import MenuBase, MenuResponse
 
 from app.crud import create_menu, read_menu, update_menu, read_menus, del_menu
 from app.schemas.submenu import SubMenuResponse, SubMenuBase
@@ -35,7 +35,7 @@ def get_menus(db: Session = Depends(get_db)) -> List[MenuResponse]:
 
 
 @app.post("/api/v1/menus", status_code=201)
-def post_menu(menu: MenuCreate, db: Session = Depends(get_db)) -> MenuResponse:
+def post_menu(menu: MenuBase, db: Session = Depends(get_db)) -> MenuResponse:
     db_menu = create_menu(db, menu)
     return db_menu
 
@@ -46,7 +46,7 @@ def get_menu(menu_id: int | str, db: Session = Depends(get_db)) -> MenuResponse:
 
 
 @app.patch("/api/v1/menus/{menu_id}")
-def patch_menu(menu_id: int, menu: MenuUpdate, db: Session = Depends(get_db)) -> MenuResponse:
+def patch_menu(menu_id: int, menu: MenuBase, db: Session = Depends(get_db)) -> MenuResponse:
     return update_menu(db, menu_id, menu)
 
 

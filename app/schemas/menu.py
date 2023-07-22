@@ -6,18 +6,10 @@ class MenuBase(BaseModel):
     description: str
 
 
-class MenuCreate(MenuBase):
-    pass
-
-
-class MenuUpdate(MenuBase):
-    pass
-
-
-class S_Menu(MenuBase):
+class MenuResponse(MenuBase):
     id: str | int
-    submenu_count: int = 0
-    dish_count: int = 0
+    submenus_count: int = 0
+    dishes_count: int = 0
 
     class Config:
         from_attributes = True

@@ -15,17 +15,17 @@ def create_dish(db: Session, dish: DishBase, submenu_id: int) -> DishResponse:
     db.add(db_dish)
     db.commit()
     db.refresh(db_dish)
-    db_dish_dict = db_dish.__dict__
-    db_dish_dict["id"] = str(db_dish_dict["id"])
-    db_dish_dict["price"] = str(round(db_dish_dict["price"], 2))
+    dish_dict = db_dish.__dict__
+    dish_dict["id"] = str(dish_dict["id"])
+    dish_dict["price"] = str(round(dish_dict["price"], 2))
 
-    return DishResponse(**db_dish_dict)
+    return DishResponse(**dish_dict)
 
 def read_dish(db: Session, dish_id: int) -> DishResponse:
     dish = db.query(Dish).filter(Dish.id == dish_id).first()
     if dish is None:
         raise HTTPException(status_code=404, detail="dish not found")
-    dish_dict = {c.name: getattr(dish, c.name) for c in dish.__table__.columns}
+    dish_dict = dish.__dict__
     dish_dict["id"] = str(dish_dict["id"])
     dish_dict["price"] = str(round(dish_dict["price"], 2))
     return DishResponse(**dish_dict)
@@ -39,11 +39,11 @@ def update_dish(db: Session, dish_id: int, dish: DishBase) -> DishResponse:
     db.commit()
     db.refresh(db_dish)
 
-    db_dish_dict = {c.name: getattr(db_dish, c.name) for c in db_dish.__table__.columns}
-    db_dish_dict["id"] = str(db_dish_dict["id"])
-    db_dish_dict["price"] = str(round(db_dish_dict["price"], 2))
+    dish_dict = db_dish.__dict__
+    dish_dict["id"] = str(dish_dict["id"])
+    dish_dict["price"] = str(round(dish_dict["price"], 2))
 
-    return DishResponse(**db_dish_dict)
+    return DishResponse(**dish_dict)
 
 
 def del_dish(db: Session, dish_id: int) -> dict:
