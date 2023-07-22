@@ -1,10 +1,10 @@
 from fastapi import HTTPException
 from sqlalchemy import delete
 from sqlalchemy.orm import Session
-from app.database.base import Dish, SubMenu
-from app.schemas.dish import DishBase, DishResponse
-import logging
-logging.basicConfig(level=logging.INFO)
+
+from app.database import Dish, SubMenu
+from app.schemas import DishBase, DishResponse
+
 
 def read_dishes(db: Session):
     dishes = db.query(Dish).all()
@@ -16,8 +16,8 @@ def read_dishes(db: Session):
         dishes_list.append(DishResponse(**dish_dict))
     return dishes_list
 
+
 def create_dish(db: Session, dish: DishBase, submenu_id: int) -> DishResponse:
-    logging.info(dish)
     db_submenu = db.query(SubMenu).get(submenu_id)
     if db_submenu is None:
         raise HTTPException(status_code=404, detail="submenu not found")
@@ -36,6 +36,7 @@ def create_dish(db: Session, dish: DishBase, submenu_id: int) -> DishResponse:
 
     return DishResponse(**dish_dict)
 
+
 def read_dish(db: Session, dish_id: int) -> DishResponse:
     dish = db.query(Dish).filter(Dish.id == dish_id).first()
     if dish is None:
@@ -44,6 +45,7 @@ def read_dish(db: Session, dish_id: int) -> DishResponse:
     dish_dict["id"] = str(dish_dict["id"])
     dish_dict["price"] = str(round(dish_dict["price"], 2))
     return DishResponse(**dish_dict)
+
 
 def update_dish(db: Session, dish_id: int, dish: DishBase) -> DishResponse:
     db_dish = db.get(Dish, dish_id)

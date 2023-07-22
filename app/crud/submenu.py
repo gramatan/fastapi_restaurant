@@ -1,9 +1,8 @@
 from fastapi import HTTPException
 from sqlalchemy import delete
 from sqlalchemy.orm import Session
-from app.database.base import SubMenu, Dish, Menu
-from app.schemas.submenu import SubMenuResponse, SubMenuBase
-import logging
+from app.database import SubMenu, Menu
+from app.schemas import SubMenuResponse, SubMenuBase
 
 
 def read_submenus(db: Session, menu_id: int) -> list[SubMenuResponse]:

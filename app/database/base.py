@@ -13,6 +13,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
+
 class Menu(Base):
     __tablename__ = "menus"
 
@@ -53,6 +54,7 @@ def create_tables():
     engine = create_engine(SQLALCHEMY_DATABASE_URL)
     Base.metadata.create_all(bind=engine)
     logging.info("Tables created")
+
 
 def drop_tables():
     logging.info("Dropping tables")

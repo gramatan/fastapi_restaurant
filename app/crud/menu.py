@@ -1,8 +1,8 @@
 from fastapi import HTTPException
 from sqlalchemy import delete
 from sqlalchemy.orm import Session
-from app.database.base import Menu, SubMenu, Dish
-from app.schemas.menu import MenuResponse, MenuBase
+from app.database import Menu
+from app.schemas import MenuResponse, MenuBase
 import logging
 
 
@@ -38,7 +38,6 @@ def read_menu(db: Session, menu_id: int) -> MenuResponse:
     return MenuResponse(**menu_dict)
 
 
-# Для update_menu:
 def update_menu(db: Session, menu_id: int, menu: MenuBase) -> MenuResponse:
     db_menu = db.get(Menu, menu_id)
     if db_menu is None:
@@ -46,9 +45,13 @@ def update_menu(db: Session, menu_id: int, menu: MenuBase) -> MenuResponse:
     for var, value in vars(menu).items():
         setattr(db_menu, var, value) if value else None
     db.commit()
-    return db_menu
+    db.refresh(db_menu)
+    db_menu_dict = db_menu.__dict__
+    db_menu_dict["id"] = str(db_menu_dict["id"])
 
-# Для del_menu:
+    return MenuResponse(**db_menu_dict)
+
+
 def del_menu(db: Session, menu_id: int) -> dict:
     db_menu = db.get(Menu, menu_id)
     if db_menu is None:
@@ -56,4 +59,3 @@ def del_menu(db: Session, menu_id: int) -> dict:
     db.execute(delete(Menu).where(Menu.id == menu_id))
     db.commit()
     return {"message": f"Menu {menu_id} deleted successfully."}
-
