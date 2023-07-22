@@ -16,6 +16,8 @@ class MenuUpdate(MenuBase):
 
 class S_Menu(MenuBase):
     id: str | int
+    submenu_count: int = 0
+    dish_count: int = 0
 
     class Config:
         from_attributes = True
