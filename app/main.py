@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from app.crud.dish import del_dish, update_dish, read_dish, create_dish, read_dishes
 from app.crud.submenu import read_submenus, create_submenu, read_submenu, update_submenu, del_submenu
 from app.database.base import SessionLocal
-from app.schemas.dish import DishUpdate, SchemasDish, DishCreate
+from app.schemas.dish import DishBase, DishResponse
 from app.schemas.menu import MenuCreate, MenuUpdate, S_Menu
 
 from app.crud import create_menu, read_menu, update_menu, read_menus, del_menu
@@ -85,27 +85,27 @@ def delete_submenu(menu_id: int, submenu_id: int, db: Session = Depends(get_db))
 
 # All about our Dishes:
 @app.get("/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes")
-def get_dishes(db: Session = Depends(get_db)):
+def get_dishes(db: Session = Depends(get_db)) -> list:
     dishes = read_dishes(db)
     return dishes
 
 
 @app.post("/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes", status_code=201)
-def post_dish(dish: DishCreate, db: Session = Depends(get_db)) -> SchemasDish:
-    db_dish = create_dish(db, dish)
+def post_dish(dish: DishBase, submenu_id: int, db: Session = Depends(get_db)) -> DishResponse:
+    db_dish = create_dish(db, dish, submenu_id)
     return db_dish
 
 
 @app.get("/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}")
-def get_dish(dish_id: int | str, db: Session = Depends(get_db)):
+def get_dish(dish_id: int | str, db: Session = Depends(get_db)) -> DishResponse:
     return read_dish(db, dish_id)
 
 
 @app.patch("/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}")
-def patch_dish(dish_id: int, dish: DishUpdate, db: Session = Depends(get_db)) -> SchemasDish:
+def patch_dish(dish_id: int, dish: DishBase, db: Session = Depends(get_db)) -> DishResponse:
     return update_dish(db, dish_id, dish)
 
 
 @app.delete("/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}")
-def delete_dish(dish_id: int, db: Session = Depends(get_db)):
+def delete_dish(dish_id: int, db: Session = Depends(get_db)) -> dict:
     return del_dish(db, dish_id)

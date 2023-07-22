@@ -7,15 +7,7 @@ class DishBase(BaseModel):
     price: str
 
 
-class DishCreate(DishBase):
-    pass
-
-
-class DishUpdate(DishBase):
-    pass
-
-
-class SchemasDish(DishBase):
+class DishResponse(DishBase):
     id: str | int
 
     class Config:
