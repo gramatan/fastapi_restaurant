@@ -29,7 +29,7 @@ class SubMenu(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
     description = Column(String, index=True)
-    menu_id = Column(Integer, ForeignKey('menus.id'))
+    menu_id = Column(Integer, ForeignKey('menus.id', ondelete='CASCADE'))
 
     dishes = relationship('Dish', backref='submenu', cascade='all, delete-orphan')
 
@@ -41,7 +41,7 @@ class Dish(Base):
     title = Column(String, index=True)
     description = Column(String, index=True)
     price = Column(Numeric(precision=10, scale=2), index=True)
-    submenu_id = Column(Integer, ForeignKey('submenus.id'))
+    submenu_id = Column(Integer, ForeignKey('submenus.id', ondelete='CASCADE'))
 
 
 def create_tables():
