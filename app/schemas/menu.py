@@ -8,8 +8,8 @@ class MenuBase(BaseModel):
 
 class MenuResponse(MenuBase):
     id: str | int
-    submenus_count: int = 0
-    dishes_count: int = 0
+    submenus_count: int
+    dishes_count: int
 
     class Config:
         from_attributes = True
