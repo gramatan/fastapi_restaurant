@@ -2,19 +2,21 @@ from fastapi import HTTPException
 from sqlalchemy import delete
 from sqlalchemy.orm import Session
 from app.database.base import Menu, SubMenu, Dish
-from app.schemas.menu import MenuCreate, MenuResponse, MenuUpdate
+from app.schemas.menu import MenuResponse, MenuBase
 import logging
 
 
-def read_menus(db: Session):
+def read_menus(db: Session) -> list[MenuResponse]:
     menus = db.query(Menu).all()
+    menus_list = []
     for menu in menus:
-        menu.submenu_count = db.query(SubMenu).filter(SubMenu.menu_id == menu.id).count()
-        menu.dish_count = db.query(Dish).join(SubMenu).filter(SubMenu.menu_id == menu.id).count()
-    return menus
+        menu_response = MenuResponse(**menu.__dict__)
+        menu_response.id = str(menu_response.id)
+        menus_list.append(menu_response)
+    return menus_list
 
 
-def create_menu(db: Session, menu: MenuCreate):
+def create_menu(db: Session, menu: MenuBase) -> MenuResponse:
     logging.info(menu)
     db_menu = Menu(**menu.model_dump())
     db.add(db_menu)
@@ -26,16 +28,18 @@ def create_menu(db: Session, menu: MenuCreate):
     return MenuResponse(**db_menu_dict)
 
 
-def read_menu(db: Session, menu_id: int):
-    menu = db.query(Menu).filter(Menu.id == menu_id).first()
-    if menu is None:
+def read_menu(db: Session, menu_id: int) -> MenuResponse:
+    db_menu = db.query(Menu).filter(Menu.id == menu_id).first()
+    if db_menu is None:
         raise HTTPException(status_code=404, detail="menu not found")
-    menu.id = str(menu.id)
-    return menu
+    db.refresh(db_menu)
+    menu_dict = db_menu.__dict__
+    menu_dict["id"] = str(menu_dict["id"])
+    return MenuResponse(**menu_dict)
 
 
 # Для update_menu:
-def update_menu(db: Session, menu_id: int, menu: MenuUpdate) -> MenuResponse:
+def update_menu(db: Session, menu_id: int, menu: MenuBase) -> MenuResponse:
     db_menu = db.get(Menu, menu_id)
     if db_menu is None:
         raise HTTPException(status_code=404, detail="menu not found")
