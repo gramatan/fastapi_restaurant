@@ -33,7 +33,7 @@ def read_submenu(db: Session, submenu_id: int):
 def update_submenu(db: Session, submenu_id: int, submenu: SubMenuUpdate) -> SchemasSubMenu:
     db_submenu = db.get(SubMenu, submenu_id)
     if db_submenu is None:
-        raise HTTPException(status_code=404, detail="Submenu not found")
+        raise HTTPException(status_code=404, detail="submenu not found")
     for var, value in vars(submenu).items():
         setattr(db_submenu, var, value) if value else None
     db.commit()
@@ -43,7 +43,7 @@ def update_submenu(db: Session, submenu_id: int, submenu: SubMenuUpdate) -> Sche
 def del_submenu(db: Session, submenu_id: int) -> dict:
     db_submenu = db.get(SubMenu, submenu_id)
     if db_submenu is None:
-        raise HTTPException(status_code=404, detail="Submenu not found")
+        raise HTTPException(status_code=404, detail="submenu not found")
     db.execute(delete(SubMenu).where(SubMenu.id == submenu_id))
     db.commit()
     return {"message": f"Submenu {submenu_id} deleted successfully."}

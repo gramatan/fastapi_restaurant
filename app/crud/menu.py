@@ -34,7 +34,7 @@ def read_menu(db: Session, menu_id: int):
 def update_menu(db: Session, menu_id: int, menu: MenuUpdate) -> S_Menu:
     db_menu = db.get(Menu, menu_id)
     if db_menu is None:
-        raise HTTPException(status_code=404, detail="Menu not found")
+        raise HTTPException(status_code=404, detail="menu not found")
     for var, value in vars(menu).items():
         setattr(db_menu, var, value) if value else None
     db.commit()
@@ -44,7 +44,7 @@ def update_menu(db: Session, menu_id: int, menu: MenuUpdate) -> S_Menu:
 def del_menu(db: Session, menu_id: int) -> dict:
     db_menu = db.get(Menu, menu_id)
     if db_menu is None:
-        raise HTTPException(status_code=404, detail="Menu not found")
+        raise HTTPException(status_code=404, detail="menu not found")
     db.execute(delete(Menu).where(Menu.id == menu_id))
     db.commit()
     return {"message": f"Menu {menu_id} deleted successfully."}
