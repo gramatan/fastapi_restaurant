@@ -14,4 +14,4 @@ git clone https://github.com/gramatan/fastapi_restaurant.git
 docker-compose up
 ```
 
-Всё готово! Теперь вы готовы приступить к тестированию!
+Всё готово к тестированию!
