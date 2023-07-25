@@ -1,0 +1,7 @@
+FROM postgres:latest
+
+ENV POSTGRES_USER ylab
+ENV POSTGRES_PASSWORD no_secure_password
+ENV POSTGRES_DB resto
+
+COPY /resto.sql /docker-entrypoint-initdb.d/
