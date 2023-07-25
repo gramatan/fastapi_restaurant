@@ -56,8 +56,7 @@ def delete_menu(menu_id: int, db: Session = Depends(get_db)):
     return del_menu(db, menu_id)
 
 
-# All about our Submenus. menu_id is not used in some handlers because of consecutive numbering,
-# but we will keep it for further tasks:
+# All about our Submenus.
 @app.get("/api/v1/menus/{menu_id}/submenus")
 def get_submenus(menu_id: int, db: Session = Depends(get_db)) -> List[SubMenuResponse]:
     submenus = read_submenus(db, menu_id)
