@@ -87,30 +87,30 @@ async def delete_submenu(menu_id: int, submenu_id: int, db: Session = Depends(ge
 
 # All about our Dishes:
 @app.get("/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes")
-async def get_dishes(db: Session = Depends(get_db)):
-    dishes = await read_dishes(db)
+async def get_dishes(submenu_id: int, menu_id: int, db: Session = Depends(get_db)):
+    dishes = await read_dishes(db, submenu_id, menu_id)
     return dishes
 
 
 @app.post("/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes", status_code=201)
-async def post_dish(dish: DishBase, submenu_id: int, db: Session = Depends(get_db)) -> DishResponse:
-    db_dish = await create_dish(db, dish, submenu_id)
+async def post_dish(dish: DishBase, submenu_id: int, menu_id: int, db: Session = Depends(get_db)) -> DishResponse:
+    db_dish = await create_dish(db, dish, submenu_id, menu_id)
     return db_dish
 
 
 @app.get("/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}")
-async def get_dish(dish_id: int | str, db: Session = Depends(get_db)) -> DishResponse:
-    response = await read_dish(db, dish_id)
+async def get_dish(dish_id: int | str, submenu_id: int, menu_id: int, db: Session = Depends(get_db)) -> DishResponse:
+    response = await read_dish(db, dish_id, submenu_id, menu_id)
     return response
 
 
 @app.patch("/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}")
-async def patch_dish(dish_id: int, dish: DishBase, db: Session = Depends(get_db)) -> DishResponse:
-    response = await update_dish(db, dish_id, dish)
+async def patch_dish(dish_id: int, dish: DishBase, submenu_id: int, menu_id: int, db: Session = Depends(get_db)) -> DishResponse:
+    response = await update_dish(db, dish_id, dish, submenu_id, menu_id)
     return response
 
 
 @app.delete("/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}")
-async def delete_dish(dish_id: int, db: Session = Depends(get_db)) -> dict:
-    response = await del_dish(db, dish_id)
+async def delete_dish(submenu_id: int, menu_id: int, dish_id: int, db: Session = Depends(get_db)) -> dict:
+    response = await del_dish(db, dish_id, submenu_id, menu_id)
     return response
