@@ -1,6 +1,7 @@
-from fastapi import HTTPException
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
+
+from app.crud.validator import validate_menu_submenu_dish
 from app.database import Menu
 from app.schemas import MenuResponse, MenuBase
 import logging
@@ -30,9 +31,7 @@ async def create_menu(db: Session, menu: MenuBase) -> MenuResponse:
 
 
 async def read_menu(db: Session, menu_id: int) -> MenuResponse:
-    db_menu = await db.get(Menu, int(menu_id))
-    if db_menu is None:
-        raise HTTPException(status_code=404, detail="menu not found")
+    db_menu = await validate_menu_submenu_dish(db, int(menu_id))
     await db.refresh(db_menu)
     menu_dict = db_menu.__dict__
     menu_dict["id"] = str(menu_dict["id"])
@@ -40,23 +39,18 @@ async def read_menu(db: Session, menu_id: int) -> MenuResponse:
 
 
 async def update_menu(db: Session, menu_id: int, menu: MenuBase) -> MenuResponse:
-    db_menu = await db.get(Menu, menu_id)
-    if db_menu is None:
-        raise HTTPException(status_code=404, detail="menu not found")
+    db_menu = await validate_menu_submenu_dish(db, menu_id)
     for var, value in vars(menu).items():
         setattr(db_menu, var, value) if value else None
     await db.commit()
     await db.refresh(db_menu)
     db_menu_dict = db_menu.__dict__
     db_menu_dict["id"] = str(db_menu_dict["id"])
-
     return MenuResponse(**db_menu_dict)
 
 
 async def del_menu(db: Session, menu_id: int) -> dict:
-    db_menu = await db.get(Menu, menu_id)
-    if db_menu is None:
-        raise HTTPException(status_code=404, detail="menu not found")
+    db_menu = await validate_menu_submenu_dish(db, menu_id)
     await db.execute(delete(Menu).where(Menu.id == menu_id))
     await db.commit()
     return {"message": f"Menu {menu_id} deleted successfully."}
