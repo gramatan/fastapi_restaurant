@@ -2,17 +2,15 @@ import logging
 from sqlalchemy import Column, Integer, String, ForeignKey, Numeric
 from sqlalchemy.orm import relationship
 
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import sessionmaker, declarative_base
 
-SQLALCHEMY_DATABASE_URL = "postgresql://ylab:no_secure_password@db/resto"
+SQLALCHEMY_DATABASE_URL = "postgresql+asyncpg://ylab:no_secure_password@db/resto"
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+engine = create_async_engine(SQLALCHEMY_DATABASE_URL)
+async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
 Base = declarative_base()
-
 
 class Menu(Base):
     __tablename__ = "menus"
@@ -48,17 +46,18 @@ class Dish(Base):
     submenu_id = Column(Integer, ForeignKey('submenus.id', ondelete='CASCADE'))
 
 
-def create_tables():
+async def create_tables():
     logging.info("Creating tables")
-    SQLALCHEMY_DATABASE_URL = "postgresql://ylab:no_secure_password@localhost/resto"
-    engine = create_engine(SQLALCHEMY_DATABASE_URL)
-    Base.metadata.create_all(bind=engine)
+    SQLALCHEMY_DATABASE_URL = "postgresql+asyncpg://ylab:no_secure_password@localhost/resto"
+    engine = create_async_engine(SQLALCHEMY_DATABASE_URL)
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
     logging.info("Tables created")
 
-
-def drop_tables():
+async def drop_tables():
     logging.info("Dropping tables")
-    SQLALCHEMY_DATABASE_URL = "postgresql://ylab:no_secure_password@localhost/resto"
-    engine = create_engine(SQLALCHEMY_DATABASE_URL)
-    Base.metadata.drop_all(bind=engine)
+    SQLALCHEMY_DATABASE_URL = "postgresql+asyncpg://ylab:no_secure_password@localhost/resto"
+    engine = create_async_engine(SQLALCHEMY_DATABASE_URL)
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
     logging.info("Tables dropped")
