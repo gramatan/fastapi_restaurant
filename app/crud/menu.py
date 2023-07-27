@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 from app.crud.validator import validate_menu_submenu_dish
 from app.database import Menu
 from app.schemas import MenuResponse, MenuBase
-import logging
 
 
 async def read_menus(db: Session) -> list[MenuResponse]:
@@ -19,7 +18,6 @@ async def read_menus(db: Session) -> list[MenuResponse]:
 
 
 async def create_menu(db: Session, menu: MenuBase) -> MenuResponse:
-    logging.info(menu)
     db_menu = Menu(**menu.model_dump())
     db.add(db_menu)
     await db.commit()
