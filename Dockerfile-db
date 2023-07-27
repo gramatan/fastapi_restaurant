@@ -1,4 +1,4 @@
-FROM postgres:latest
+FROM postgres:15.1-alpine
 
 ENV POSTGRES_USER ylab
 ENV POSTGRES_PASSWORD no_secure_password
