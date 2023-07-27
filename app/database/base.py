@@ -12,6 +12,7 @@ async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession
 
 Base = declarative_base()
 
+
 class Menu(Base):
     __tablename__ = "menus"
 
@@ -53,6 +54,7 @@ async def create_tables():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     logging.info("Tables created")
+
 
 async def drop_tables():
     logging.info("Dropping tables")
