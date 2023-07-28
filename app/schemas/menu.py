@@ -11,5 +11,5 @@ class MenuResponse(MenuBase):
     submenus_count: int
     dishes_count: int
 
-    class Config:
+    class ConfigDict:
         from_attributes = True

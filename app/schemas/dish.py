@@ -10,5 +10,5 @@ class DishBase(BaseModel):
 class DishResponse(DishBase):
     id: str | int
 
-    class Config:
+    class ConfigDict:
         from_attributes = True
