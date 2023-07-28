@@ -6,4 +6,5 @@ asyncpg==0.28.0
 pydantic~=2.0.3
 
 pytest==7.4.0
-requests==2.31.0
+pytest-asyncio==0.21.1
+httpx== 0.24.1
