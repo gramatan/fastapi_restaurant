@@ -29,7 +29,8 @@ async def create_menu(db: Session, menu: MenuBase) -> MenuResponse:
 
 
 async def read_menu(db: Session, menu_id: int) -> MenuResponse:
-    db_menu = await validate_menu_submenu_dish(db, int(menu_id))
+    menu_id = int(menu_id)
+    db_menu = await validate_menu_submenu_dish(db, menu_id)
     await db.refresh(db_menu)
     menu_dict = db_menu.__dict__
     menu_dict["id"] = str(menu_dict["id"])
@@ -37,7 +38,8 @@ async def read_menu(db: Session, menu_id: int) -> MenuResponse:
 
 
 async def update_menu(db: Session, menu_id: int, menu: MenuBase) -> MenuResponse:
-    db_menu = await validate_menu_submenu_dish(db, int(menu_id))
+    menu_id = int(menu_id)
+    db_menu = await validate_menu_submenu_dish(db, menu_id)
     for var, value in vars(menu).items():
         setattr(db_menu, var, value) if value else None
     await db.commit()
@@ -48,7 +50,8 @@ async def update_menu(db: Session, menu_id: int, menu: MenuBase) -> MenuResponse
 
 
 async def del_menu(db: Session, menu_id: int) -> dict:
-    db_menu = await validate_menu_submenu_dish(db, int(menu_id))
-    await db.execute(delete(Menu).where(Menu.id == int(menu_id)))
+    menu_id = int(menu_id)
+    await validate_menu_submenu_dish(db, menu_id)
+    await db.execute(delete(Menu).where(Menu.id == menu_id))
     await db.commit()
     return {"message": f"Menu {menu_id} deleted successfully."}

@@ -7,6 +7,8 @@ from app.schemas import DishBase, DishResponse
 
 
 async def read_dishes(db: Session, submenu_id: int, menu_id: int):
+    menu_id = int(menu_id)
+    submenu_id = int(submenu_id)
     result = await db.execute(select(Dish).where(Dish.submenu_id == submenu_id and Dish.submenu.menu_id == menu_id))
     dishes = result.scalars().all()
     dishes_list = []
@@ -19,6 +21,8 @@ async def read_dishes(db: Session, submenu_id: int, menu_id: int):
 
 
 async def create_dish(db: Session, dish: DishBase, submenu_id: int, menu_id: int) -> DishResponse:
+    menu_id = int(menu_id)
+    submenu_id = int(submenu_id)
     db_menu, db_submenu = await validate_menu_submenu_dish(db, menu_id, submenu_id)
     db_submenu.dishes_count += 1
     db_menu.dishes_count += 1
@@ -37,6 +41,9 @@ async def create_dish(db: Session, dish: DishBase, submenu_id: int, menu_id: int
 
 
 async def read_dish(db: Session, dish_id: int, submenu_id: int, menu_id: int) -> DishResponse:
+    menu_id = int(menu_id)
+    submenu_id = int(submenu_id)
+    dish_id = int(dish_id)
     db_menu, db_submenu, db_dish = await validate_menu_submenu_dish(db, menu_id, submenu_id, int(dish_id))
 
     dish_dict = db_dish.__dict__
@@ -47,6 +54,9 @@ async def read_dish(db: Session, dish_id: int, submenu_id: int, menu_id: int) ->
 
 
 async def update_dish(db: Session, dish_id: int, dish: DishBase, submenu_id: int, menu_id: int) -> DishResponse:
+    menu_id = int(menu_id)
+    submenu_id = int(submenu_id)
+    dish_id = int(dish_id)
     db_menu, db_submenu, db_dish = await validate_menu_submenu_dish(db, menu_id, submenu_id, dish_id)
 
     for var, value in vars(dish).items():
@@ -62,6 +72,9 @@ async def update_dish(db: Session, dish_id: int, dish: DishBase, submenu_id: int
 
 
 async def del_dish(db: Session, dish_id: int, submenu_id: int, menu_id: int) -> dict:
+    menu_id = int(menu_id)
+    submenu_id = int(submenu_id)
+    dish_id = int(dish_id)
     db_menu, db_submenu, db_dish = await validate_menu_submenu_dish(db, menu_id, submenu_id, dish_id)
 
     db_submenu.dishes_count -= 1

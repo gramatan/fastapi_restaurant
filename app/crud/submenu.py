@@ -7,6 +7,7 @@ from app.schemas import SubMenuResponse, SubMenuBase
 
 
 async def read_submenus(db: Session, menu_id: int) -> list[SubMenuResponse]:
+    menu_id = int(menu_id)
     result = await db.execute(select(SubMenu).where(SubMenu.menu_id == menu_id))
     submenus = result.scalars().all()
     submenus_list = []
@@ -18,6 +19,7 @@ async def read_submenus(db: Session, menu_id: int) -> list[SubMenuResponse]:
 
 
 async def create_submenu(db: Session, submenu: SubMenuBase, menu_id: int) -> SubMenuResponse:
+    menu_id = int(menu_id)
     db_menu = await validate_menu_submenu_dish(db, menu_id=menu_id)
     db_menu.submenus_count += 1
     await db.commit()
@@ -33,6 +35,8 @@ async def create_submenu(db: Session, submenu: SubMenuBase, menu_id: int) -> Sub
 
 
 async def read_submenu(db: Session, submenu_id: int, menu_id: int) -> SubMenuResponse:
+    menu_id = int(menu_id)
+    submenu_id = int(submenu_id)
     db_menu, db_submenu = await validate_menu_submenu_dish(db, menu_id=menu_id, submenu_id=submenu_id)
     submenu_dict = db_submenu.__dict__
     submenu_dict["id"] = str(submenu_dict["id"])
@@ -40,6 +44,8 @@ async def read_submenu(db: Session, submenu_id: int, menu_id: int) -> SubMenuRes
 
 
 async def update_submenu(db: Session, submenu_id: int, submenu: SubMenuBase, menu_id: int) -> SubMenuResponse:
+    menu_id = int(menu_id)
+    submenu_id = int(submenu_id)
     db_menu, db_submenu = await validate_menu_submenu_dish(db, menu_id=menu_id, submenu_id=submenu_id)
     for var, value in vars(submenu).items():
         setattr(db_submenu, var, value) if value else None
@@ -51,6 +57,8 @@ async def update_submenu(db: Session, submenu_id: int, submenu: SubMenuBase, men
 
 
 async def del_submenu(db: Session, submenu_id: int, menu_id: int) -> dict:
+    menu_id = int(menu_id)
+    submenu_id = int(submenu_id)
     db_menu, db_submenu = await validate_menu_submenu_dish(db, menu_id=menu_id, submenu_id=submenu_id)
     db_menu.submenus_count -= 1
     db_menu.dishes_count -= db_submenu.dishes_count
