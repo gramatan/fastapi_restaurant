@@ -4,7 +4,6 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 
 from app.crud import menu as crud_menu
 from app.schemas import MenuBase
-
 from app.database.base import SQLALCHEMY_DATABASE_URL
 
 
@@ -14,6 +13,7 @@ async def db_session() -> AsyncSession:
     engine = create_async_engine(SQLALCHEMY_DATABASE_URL, echo=True)
     async with AsyncSession(engine) as session:
         yield session
+
 
 @pytest.mark.asyncio
 async def test_create_and_read_menu(db_session: AsyncSession) -> None:
@@ -55,6 +55,7 @@ async def test_update_menu(db_session: AsyncSession) -> None:
         # cleanup
         await crud_menu.del_menu(session, menu_id)
 
+
 @pytest.mark.asyncio
 async def test_delete_menu(db_session: AsyncSession) -> None:
     async for session in db_session:
@@ -71,4 +72,3 @@ async def test_delete_menu(db_session: AsyncSession) -> None:
         # Expect an HTTPException
         with pytest.raises(HTTPException):
             await crud_menu.read_menu(session, menu_id)
-
