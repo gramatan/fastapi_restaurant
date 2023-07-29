@@ -2,8 +2,8 @@ from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 from app.crud.validator import validate_menu_submenu_dish
-from app.database import Menu
-from app.schemas import MenuResponse, MenuBase
+from app.database.base import Menu
+from app.schemas.menu import MenuResponse, MenuBase
 
 
 async def read_menus(db: Session) -> list[MenuResponse]:

@@ -4,8 +4,10 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from app.crud import dish as crud_dish
 from app.crud import menu as crud_menu
 from app.crud import submenu as crud_submenu
-from app.schemas import MenuBase, SubMenuBase, DishBase
-from app.database.base import SQLALCHEMY_DATABASE_URL
+from app.schemas.menu import MenuBase
+from app.schemas.submenu import SubMenuBase
+from app.schemas.dish import DishBase
+from .conftest import SQLALCHEMY_DATABASE_URL
 
 
 # Database fixture

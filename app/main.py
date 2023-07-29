@@ -5,12 +5,14 @@ from typing import List
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 
-from app.database import async_session
-from app.schemas import DishBase, DishResponse, MenuBase, MenuResponse, SubMenuResponse, SubMenuBase
+from app.database.base import async_session
+from app.schemas.menu import MenuBase, MenuResponse
+from app.schemas.submenu import SubMenuBase, SubMenuResponse
+from app.schemas.dish import DishBase, DishResponse
 
-from app.crud import del_dish, update_dish, read_dish, create_dish, read_dishes
-from app.crud import read_submenus, create_submenu, read_submenu, update_submenu, del_submenu
-from app.crud import create_menu, read_menu, update_menu, read_menus, del_menu
+from app.crud.dish import del_dish, update_dish, read_dish, create_dish, read_dishes
+from app.crud.submenu import read_submenus, create_submenu, read_submenu, update_submenu, del_submenu
+from app.crud.menu import create_menu, read_menu, update_menu, read_menus, del_menu
 
 
 logging.basicConfig(level=logging.INFO)

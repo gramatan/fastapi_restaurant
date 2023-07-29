@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from app.database import Menu, SubMenu, Dish
+from app.database.base import Menu, SubMenu, Dish
 
 
 async def validate_menu_submenu_dish(db: Session, menu_id: int = None, submenu_id: int = None, dish_id: int = None):

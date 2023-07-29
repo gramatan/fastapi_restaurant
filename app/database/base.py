@@ -1,3 +1,5 @@
+import os
+
 import logging
 from sqlalchemy import Column, Integer, String, ForeignKey, Numeric
 from sqlalchemy.orm import relationship
@@ -5,7 +7,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-SQLALCHEMY_DATABASE_URL = "postgresql+asyncpg://ylab:no_secure_password@db/resto"
+SQLALCHEMY_DATABASE_URL = os.getenv("SQLALCHEMY_DATABASE_URL")
 
 engine = create_async_engine(SQLALCHEMY_DATABASE_URL)
 async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)

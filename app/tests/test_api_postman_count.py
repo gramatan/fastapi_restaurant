@@ -1,8 +1,6 @@
 import pytest
 from httpx import AsyncClient
-
-# URL = "http://127.0.0.1:8000"   # local
-URL = "http://127.0.0.1:8001"   # Docker
+from .conftest import URL
 
 
 @pytest.mark.asyncio

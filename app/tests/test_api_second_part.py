@@ -1,12 +1,11 @@
 import pytest
 from httpx import AsyncClient
+from .conftest import URL
+
 
 # IMPORTANT: For these tests we need an empty database because of empty lists of menus expected
-# URL = "http://127.0.0.1:8000"   # local
-URL = "http://127.0.0.1:8001"   # Docker
-
 @pytest.mark.asyncio
-async def test_get_empty_list() -> None:
+async def test_empty_list_than_create_menu_submenu_dish_get_lists_update_data() -> None:
     # empty list of menus
     async with AsyncClient(base_url=URL) as ac:
         response = await ac.get("/api/v1/menus")
@@ -25,14 +24,11 @@ async def test_get_empty_list() -> None:
     assert response.status_code == 200
     data = response.json()
     assert data == []
-
-
-@pytest.mark.asyncio
-async def test_create_menu_submenu_dish_get_lists_update_data() -> None:
     # create menu
     async with AsyncClient(base_url=URL) as ac:
         response = await ac.post("/api/v1/menus", json={"title": "menu1", "description": "Empty"})
-        menu_id = response.json()["id"]
+        menu_data = response.json()
+    menu_id = menu_data["id"]
 
     # create submenu
     async with AsyncClient(base_url=URL) as ac:
@@ -44,9 +40,13 @@ async def test_create_menu_submenu_dish_get_lists_update_data() -> None:
     async with AsyncClient(base_url=URL) as ac:
         response = await ac.post(f"/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes",
                                  json={"title": "dish1", "description": "Nope", "price": "100"})
+        dish_data = response.json()
+    dish1_id = dish_data["id"]
     async with AsyncClient(base_url=URL) as ac:
         response = await ac.post(f"/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes",
                                  json={"title": "dish2", "description": "Nope again", "price": "200"})
+        dish_data = response.json()
+    dish2_id = dish_data["id"]
 
     # get menu lists
     async with AsyncClient(base_url=URL) as ac:
@@ -104,7 +104,7 @@ async def test_create_menu_submenu_dish_get_lists_update_data() -> None:
 
     # update dish
     async with AsyncClient(base_url=URL) as ac:
-        response = await ac.patch(f"/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes/1",
+        response = await ac.patch(f"/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish1_id}",
                                 json={"title": "dish1_updated", "description": "updated", "price": "300"})
     assert response.status_code == 200
     data = response.json()
@@ -115,10 +115,10 @@ async def test_create_menu_submenu_dish_get_lists_update_data() -> None:
 
     # delete dish
     async with AsyncClient(base_url=URL) as ac:
-        response = await ac.delete(f"/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes/2")
+        response = await ac.delete(f"/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish2_id}")
     assert response.status_code == 200
     data = response.json()
-    assert data["message"] == "Dish 2 deleted successfully."
+    assert data["message"] == f"Dish {dish2_id} deleted successfully."
 
     # delete submenu
     async with AsyncClient(base_url=URL) as ac:
