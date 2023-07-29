@@ -33,7 +33,9 @@ docker-compose -f docker-compose-test.yaml up
 
 Приложение готово к тестированию! Оно доступно на порту 8000. Основной исполняемый файл находится по адресу `/app/main.py`.
 
-Тесты находятся в директории `app/tests`. Сценарий "Проверка количества блюд и подменю в меню" находится в файле [test_api_postman_count.py](app%2Ftests%2Ftest_api_postman_count.py).
+Тесты находятся в директории `app/tests`. 
+
+Сценарий "Проверка количества блюд и подменю в меню" находится в файле [test_api_postman_count.py](app%2Ftests%2Ftest_api_postman_count.py).
 
 Все остальные проверки API находятся в [test_api_second_part.py](app%2Ftests%2Ftest_api_second_part.py).
 
