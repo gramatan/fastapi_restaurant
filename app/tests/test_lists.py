@@ -7,7 +7,8 @@ from app.crud import submenu as crud_submenu
 from app.schemas.menu import MenuBase
 from app.schemas.submenu import SubMenuBase
 from app.schemas.dish import DishBase
-from .conftest import SQLALCHEMY_DATABASE_URL
+
+from app.tests.conftest import SQLALCHEMY_DATABASE_URL
 
 
 # Database fixture

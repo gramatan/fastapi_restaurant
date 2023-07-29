@@ -1,7 +1,7 @@
 import pytest
 from httpx import AsyncClient
-from .conftest import URL
 
+from app.tests.conftest import URL
 
 @pytest.mark.asyncio
 async def test_number_of_dishes_and_submenus_in_menu() -> None:

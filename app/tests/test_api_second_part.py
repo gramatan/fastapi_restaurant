@@ -1,7 +1,7 @@
 import pytest
 from httpx import AsyncClient
-from .conftest import URL
 
+from app.tests.conftest import URL
 
 # IMPORTANT: For these tests we need an empty database because of empty lists of menus expected
 @pytest.mark.asyncio

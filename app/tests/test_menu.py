@@ -4,7 +4,8 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 
 from app.crud import menu as crud_menu
 from app.schemas.menu import MenuBase
-from .conftest import SQLALCHEMY_DATABASE_URL
+
+from app.tests.conftest import SQLALCHEMY_DATABASE_URL
 
 
 # Database fixture
