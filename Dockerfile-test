@@ -2,18 +2,18 @@
 FROM python:3.10-slim
 
 # Set working directory
-WORKDIR /app
+WORKDIR /test
 
 # Copy project
-ADD . /app
+ADD . /test
 
 # set environment variables
-ENV PYTHONPATH=/app
-ENV SQLALCHEMY_DATABASE_URL="postgresql+asyncpg://ylab:no_secure_password@db-test/resto"
+ENV PYTHONPATH=/test
+ENV SQLALCHEMY_DATABASE_URL="postgresql+asyncpg://ylab:no_secure_password@db/resto"
 ENV URL="http://web-test:8000"
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Run pytest when the container launches
-CMD ["pytest"]
+CMD ["pytest app/tests"]

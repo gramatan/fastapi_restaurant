@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  db-test:
+  db:
     container_name: ylab_postgres_test
     build:
       context: .
@@ -15,19 +15,19 @@ services:
       timeout: 5s
       retries: 5
 
-  web-test:
+  web:
     build:
       context: .
       dockerfile: Dockerfile-test
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     environment:
       - PYTHONPATH=/app
-      - SQLALCHEMY_DATABASE_URL=postgresql+asyncpg://ylab:no_secure_password@db-test/resto
+      - SQLALCHEMY_DATABASE_URL=postgresql+asyncpg://ylab:no_secure_password@db/resto
       - URL=http://web-test:8000
     ports:
       - "8000:8000"
     depends_on:
-      db-test:
+      db:
         condition: service_healthy
 
   pytest:
@@ -35,11 +35,16 @@ services:
       context: .
       dockerfile: Dockerfile-test
     environment:
-      - PYTHONPATH=/app
-      - SQLALCHEMY_DATABASE_URL=postgresql+asyncpg://ylab:no_secure_password@db-test/resto
+      - PYTHONPATH=/test
+      - SQLALCHEMY_DATABASE_URL=postgresql+asyncpg://ylab:no_secure_password@db/resto
       - URL=http://web-test:8000
+    command: >
+      /bin/bash -c "
+      export PYTHONPATH=/test &&
+      pytest app/tests
+      "
     depends_on:
-      db-test:
+      db:
         condition: service_healthy
-      web-test:
+      web:
         condition: service_started
