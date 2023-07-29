@@ -5,6 +5,7 @@ from typing import List
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 
+from app.crud.calc_submenu_and_dishes import orm_read_menu
 from app.database.base import async_session
 from app.schemas.menu import MenuBase, MenuResponse
 from app.schemas.submenu import SubMenuBase, SubMenuResponse
@@ -100,3 +101,8 @@ async def patch_dish(menu_id: int, submenu_id: int, dish_id: int, dish: DishBase
 @app.delete("/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}")
 async def delete_dish(menu_id: int, submenu_id: int, dish_id: int, db: Session = Depends(get_db)) -> dict:
     return await del_dish(db, dish_id, submenu_id, menu_id)
+
+
+@app.get("/api/v1/menu/{menu_id}")
+async def get_menu_orm(menu_id: int, db: Session = Depends(get_db)) -> MenuResponse:
+    return await orm_read_menu(db, menu_id)
