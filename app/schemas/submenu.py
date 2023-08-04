@@ -7,7 +7,7 @@ class SubMenuBase(BaseModel):
 
 
 class SubMenuResponse(SubMenuBase):
-    id: str | int
+    id: int | str
     dishes_count: int
 
     class ConfigDict:

@@ -1,20 +1,18 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Numeric
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, ForeignKey, Integer, Numeric, String
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker, declarative_base
-
-SQLALCHEMY_DATABASE_URL = "postgresql+asyncpg://ylab:no_secure_password@db/resto"
+SQLALCHEMY_DATABASE_URL = 'postgresql+asyncpg://ylab:no_secure_password@db/resto'
 # SQLALCHEMY_DATABASE_URL = "postgresql+asyncpg://ylab:no_secure_password@localhost/resto"
 
 engine = create_async_engine(SQLALCHEMY_DATABASE_URL)
 async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
-Base = declarative_base()
+Base = declarative_base()   # type: ignore
 
 
-class Menu(Base):
-    __tablename__ = "menus"
+class Menu(Base):   # type: ignore
+    __tablename__ = 'menus'
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
@@ -25,8 +23,8 @@ class Menu(Base):
     submenus = relationship('SubMenu', backref='menu', cascade='all, delete-orphan')
 
 
-class SubMenu(Base):
-    __tablename__ = "submenus"
+class SubMenu(Base):    # type: ignore
+    __tablename__ = 'submenus'
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
@@ -37,8 +35,8 @@ class SubMenu(Base):
     dishes = relationship('Dish', backref='submenu', cascade='all, delete-orphan')
 
 
-class Dish(Base):
-    __tablename__ = "dishes"
+class Dish(Base):   # type: ignore
+    __tablename__ = 'dishes'
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
