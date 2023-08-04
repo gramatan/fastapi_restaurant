@@ -7,7 +7,7 @@ class MenuBase(BaseModel):
 
 
 class MenuResponse(MenuBase):
-    id: str | int
+    id: int | str
     submenus_count: int
     dishes_count: int
 
