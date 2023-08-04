@@ -2,9 +2,9 @@ from fastapi import Depends
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.crud.validator import validate_menu_submenu_dish
 from app.database.base import Dish
 from app.database.utils import get_db
+from app.database.validator import validate_menu_submenu_dish
 from app.schemas.dish import DishBase, DishResponse
 
 
