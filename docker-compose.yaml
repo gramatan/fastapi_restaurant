@@ -34,5 +34,11 @@ services:
       db:
         condition: service_healthy
 
+  redis:
+    container_name: ylab_redis
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
 volumes:
   postgres_data:

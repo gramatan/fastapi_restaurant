@@ -30,6 +30,13 @@ services:
       db:
         condition: service_healthy
 
+  redis:
+    container_name: ylab_redis_test
+    image: redis:latest
+    command: redis-server --appendonly no
+    ports:
+      - "6379:6379"
+
   pytest:
     build:
       context: .

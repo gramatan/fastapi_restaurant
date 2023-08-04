@@ -11,3 +11,4 @@ httpx== 0.24.1
 asyncio==3.4.3
 
 pre-commit==3.3.3
+redis==4.6.0
