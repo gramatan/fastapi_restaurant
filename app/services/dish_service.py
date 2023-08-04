@@ -1,5 +1,7 @@
 from fastapi import Depends
+
 from app.repository.dish import DishRepository
+
 
 class DishService:
     def __init__(self, dish_repository: DishRepository = Depends()):
