@@ -24,3 +24,7 @@ class RedisCache:
 
     def delete(self, key: Any) -> int:
         return self.redis_client.delete(str(key))
+
+    def clear_cache(self, pattern: str):
+        for key in self.redis_client.scan_iter(pattern):
+            self.redis_client.delete(key)
