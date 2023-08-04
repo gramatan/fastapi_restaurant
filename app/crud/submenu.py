@@ -1,4 +1,5 @@
 from sqlalchemy import delete, select
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
 from app.crud.validator import validate_menu_submenu_dish
@@ -6,7 +7,7 @@ from app.database.base import SubMenu
 from app.schemas.submenu import SubMenuResponse, SubMenuBase
 
 
-async def read_submenus(db: Session, menu_id: int) -> list[SubMenuResponse]:
+async def read_submenus(db: AsyncSession, menu_id: int) -> list[SubMenuResponse]:
     menu_id = int(menu_id)
     result = await db.execute(select(SubMenu).where(SubMenu.menu_id == menu_id))
     submenus = result.scalars().all()
@@ -18,7 +19,7 @@ async def read_submenus(db: Session, menu_id: int) -> list[SubMenuResponse]:
     return submenus_list
 
 
-async def create_submenu(db: Session, submenu: SubMenuBase, menu_id: int) -> SubMenuResponse:
+async def create_submenu(db: AsyncSession, submenu: SubMenuBase, menu_id: int) -> SubMenuResponse:
     menu_id = int(menu_id)
     db_menu = await validate_menu_submenu_dish(db, menu_id=menu_id)
     db_menu.submenus_count += 1
@@ -34,7 +35,7 @@ async def create_submenu(db: Session, submenu: SubMenuBase, menu_id: int) -> Sub
     return SubMenuResponse(**submenu_dict)
 
 
-async def read_submenu(db: Session, submenu_id: int, menu_id: int) -> SubMenuResponse:
+async def read_submenu(db: AsyncSession, submenu_id: int, menu_id: int) -> SubMenuResponse:
     menu_id = int(menu_id)
     submenu_id = int(submenu_id)
     db_menu, db_submenu = await validate_menu_submenu_dish(db, menu_id=menu_id, submenu_id=submenu_id)
@@ -43,7 +44,7 @@ async def read_submenu(db: Session, submenu_id: int, menu_id: int) -> SubMenuRes
     return SubMenuResponse(**submenu_dict)
 
 
-async def update_submenu(db: Session, submenu_id: int, submenu: SubMenuBase, menu_id: int) -> SubMenuResponse:
+async def update_submenu(db: AsyncSession, submenu_id: int, submenu: SubMenuBase, menu_id: int) -> SubMenuResponse:
     menu_id = int(menu_id)
     submenu_id = int(submenu_id)
     db_menu, db_submenu = await validate_menu_submenu_dish(db, menu_id=menu_id, submenu_id=submenu_id)
@@ -56,7 +57,7 @@ async def update_submenu(db: Session, submenu_id: int, submenu: SubMenuBase, men
     return SubMenuResponse(**submenu_dict)
 
 
-async def del_submenu(db: Session, submenu_id: int, menu_id: int) -> dict:
+async def del_submenu(db: AsyncSession, submenu_id: int, menu_id: int) -> dict:
     menu_id = int(menu_id)
     submenu_id = int(submenu_id)
     db_menu, db_submenu = await validate_menu_submenu_dish(db, menu_id=menu_id, submenu_id=submenu_id)

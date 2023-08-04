@@ -8,3 +8,4 @@ pydantic~=2.0.3
 pytest==7.4.0
 pytest-asyncio==0.21.1
 httpx== 0.24.1
+asyncio==3.4.3

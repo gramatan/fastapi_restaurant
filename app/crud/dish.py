@@ -1,4 +1,5 @@
 from sqlalchemy import delete, select
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
 from app.crud.validator import validate_menu_submenu_dish
@@ -6,7 +7,7 @@ from app.database.base import Dish
 from app.schemas.dish import DishResponse, DishBase
 
 
-async def read_dishes(db: Session, submenu_id: int, menu_id: int):
+async def read_dishes(db: AsyncSession, submenu_id: int, menu_id: int):
     menu_id = int(menu_id)
     submenu_id = int(submenu_id)
     result = await db.execute(select(Dish).where(Dish.submenu_id == submenu_id and Dish.submenu.menu_id == menu_id))
@@ -20,7 +21,7 @@ async def read_dishes(db: Session, submenu_id: int, menu_id: int):
     return dishes_list
 
 
-async def create_dish(db: Session, dish: DishBase, submenu_id: int, menu_id: int) -> DishResponse:
+async def create_dish(db: AsyncSession, dish: DishBase, submenu_id: int, menu_id: int) -> DishResponse:
     menu_id = int(menu_id)
     submenu_id = int(submenu_id)
     db_menu, db_submenu = await validate_menu_submenu_dish(db, menu_id, submenu_id)
@@ -40,7 +41,7 @@ async def create_dish(db: Session, dish: DishBase, submenu_id: int, menu_id: int
     return DishResponse(**dish_dict)
 
 
-async def read_dish(db: Session, dish_id: int, submenu_id: int, menu_id: int) -> DishResponse:
+async def read_dish(db: AsyncSession, dish_id: int, submenu_id: int, menu_id: int) -> DishResponse:
     menu_id = int(menu_id)
     submenu_id = int(submenu_id)
     dish_id = int(dish_id)
@@ -53,7 +54,7 @@ async def read_dish(db: Session, dish_id: int, submenu_id: int, menu_id: int) ->
     return DishResponse(**dish_dict)
 
 
-async def update_dish(db: Session, dish_id: int, dish: DishBase, submenu_id: int, menu_id: int) -> DishResponse:
+async def update_dish(db: AsyncSession, dish_id: int, dish: DishBase, submenu_id: int, menu_id: int) -> DishResponse:
     menu_id = int(menu_id)
     submenu_id = int(submenu_id)
     dish_id = int(dish_id)
@@ -71,7 +72,7 @@ async def update_dish(db: Session, dish_id: int, dish: DishBase, submenu_id: int
     return DishResponse(**dish_dict)
 
 
-async def del_dish(db: Session, dish_id: int, submenu_id: int, menu_id: int) -> dict:
+async def del_dish(db: AsyncSession, dish_id: int, submenu_id: int, menu_id: int) -> dict:
     menu_id = int(menu_id)
     submenu_id = int(submenu_id)
     dish_id = int(dish_id)
