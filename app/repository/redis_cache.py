@@ -11,6 +11,7 @@ def get_redis_client():
 class RedisCache:
     def __init__(self, redis_client: redis.Redis) -> None:
         self.redis_client = redis_client
+        self.ttl = 1800
 
     def get(self, key: Any) -> Any | None:
         data = self.redis_client.get(str(key))
@@ -20,7 +21,7 @@ class RedisCache:
 
     def set(self, key: Any, value: Any) -> bool:
         data = pickle.dumps(value)
-        return self.redis_client.set(str(key), data)
+        return self.redis_client.setex(str(key), self.ttl, data)
 
     def delete(self, key: Any) -> int:
         return self.redis_client.delete(str(key))
