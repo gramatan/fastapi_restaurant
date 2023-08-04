@@ -1,5 +1,6 @@
 import asyncio
 import logging
+
 from app.database.utils import create_tables, drop_tables
 
 logging.basicConfig(level=logging.INFO)
