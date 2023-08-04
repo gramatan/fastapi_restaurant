@@ -1,10 +1,11 @@
 from fastapi import HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
 from app.database.base import Menu, SubMenu, Dish
 
 
-async def validate_menu_submenu_dish(db: Session, menu_id: int = None, submenu_id: int = None, dish_id: int = None):
+async def validate_menu_submenu_dish(db: AsyncSession, menu_id: int = None, submenu_id: int = None, dish_id: int = None):
     menu_id = int(menu_id) if menu_id is not None else None
     submenu_id = int(submenu_id) if submenu_id is not None else None
     dish_id = int(dish_id) if dish_id is not None else None
