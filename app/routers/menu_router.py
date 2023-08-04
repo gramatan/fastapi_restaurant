@@ -3,8 +3,7 @@ from typing import List
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.crud.calc_submenu_and_dishes import orm_read_menu
-from app.crud.menu import read_menus, create_menu, read_menu, update_menu, del_menu
+from app.crud.menu import read_menus, create_menu, read_menu, update_menu, del_menu, orm_read_menu
 from app.database.utils import get_db
 from app.schemas.menu import MenuResponse, MenuBase
 
