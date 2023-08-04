@@ -12,15 +12,15 @@ class RedisCache:
     def __init__(self, redis_client: redis.Redis) -> None:
         self.redis_client = redis_client
 
-    def get(self, key: str | tuple[str, int | str]) -> Any | None:
+    def get(self, key: Any) -> Any | None:
         data = self.redis_client.get(str(key))
         if data is not None:
             return pickle.loads(data)
         return None
 
-    def set(self, key: str | tuple[str, int | str], value: Any) -> bool:
+    def set(self, key: Any, value: Any) -> bool:
         data = pickle.dumps(value)
         return self.redis_client.set(str(key), data)
 
-    def delete(self, key: str | tuple[str, int | str]) -> int:
+    def delete(self, key: Any) -> int:
         return self.redis_client.delete(str(key))
