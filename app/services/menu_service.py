@@ -1,10 +1,6 @@
-from typing import List, Any
-
 from fastapi import Depends
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repository.menu import MenuRepository
-from app.schemas.menu import MenuResponse
 
 
 class MenuService:

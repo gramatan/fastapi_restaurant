@@ -1,11 +1,6 @@
-from typing import List, Any
-
 from fastapi import Depends
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.repository.menu import MenuRepository
 from app.repository.submenu import SubmenuRepository
-from app.schemas.menu import MenuResponse
 from app.schemas.submenu import SubMenuBase
 
 
@@ -27,4 +22,3 @@ class SubmenuService:
 
     def del_submenu(self, submenu_id: int, menu_id: int):
         return self.submenu_repository.del_submenu(submenu_id, menu_id)
-
