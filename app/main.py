@@ -3,10 +3,12 @@ import logging
 from typing import List
 
 from fastapi import FastAPI, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
 from app.crud.calc_submenu_and_dishes import orm_read_menu
-from app.database.base import async_session
+from app.database.utils import get_db
+from app.routers import menu_router
 from app.schemas.menu import MenuBase, MenuResponse
 from app.schemas.submenu import SubMenuBase, SubMenuResponse
 from app.schemas.dish import DishBase, DishResponse
@@ -19,36 +21,7 @@ from app.crud.menu import create_menu, read_menu, update_menu, read_menus, del_m
 logging.basicConfig(level=logging.INFO)
 app = FastAPI()
 
-
-async def get_db():
-    async with async_session() as db:
-        yield db
-
-
-# All about our Menus:
-@app.get("/api/v1/menus")
-async def get_menus(db: Session = Depends(get_db)) -> List[MenuResponse]:
-    return await read_menus(db)
-
-
-@app.post("/api/v1/menus", status_code=201)
-async def post_menu(menu: MenuBase, db: Session = Depends(get_db)) -> MenuResponse:
-    return await create_menu(db, menu)
-
-
-@app.get("/api/v1/menus/{menu_id}")
-async def get_menu(menu_id: int | str, db: Session = Depends(get_db)) -> MenuResponse:
-    return await read_menu(db, menu_id)
-
-
-@app.patch("/api/v1/menus/{menu_id}")
-async def patch_menu(menu_id: int, menu: MenuBase, db: Session = Depends(get_db)) -> MenuResponse:
-    return await update_menu(db, menu_id, menu)
-
-
-@app.delete("/api/v1/menus/{menu_id}")
-async def delete_menu(menu_id: int, db: Session = Depends(get_db)) -> dict:
-    return await del_menu(db, menu_id)
+app.include_router(menu_router.router, prefix="/api/v1/menus", tags=["menus"])
 
 
 # All about our Submenus.
@@ -102,7 +75,3 @@ async def patch_dish(menu_id: int, submenu_id: int, dish_id: int, dish: DishBase
 async def delete_dish(menu_id: int, submenu_id: int, dish_id: int, db: Session = Depends(get_db)) -> dict:
     return await del_dish(db, dish_id, submenu_id, menu_id)
 
-
-@app.get("/api/v1/menu/{menu_id}")
-async def get_menu_orm(menu_id: int, db: Session = Depends(get_db)) -> MenuResponse:
-    return await orm_read_menu(db, menu_id)
