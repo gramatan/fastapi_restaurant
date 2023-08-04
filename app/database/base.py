@@ -1,4 +1,3 @@
-import logging
 from sqlalchemy import Column, Integer, String, ForeignKey, Numeric
 from sqlalchemy.orm import relationship
 
@@ -46,21 +45,3 @@ class Dish(Base):
     description = Column(String, index=True)
     price = Column(Numeric(precision=10, scale=2), index=True)
     submenu_id = Column(Integer, ForeignKey('submenus.id', ondelete='CASCADE'))
-
-
-async def create_tables():
-    logging.info("Creating tables")
-    SQLALCHEMY_DATABASE_URL = "postgresql+asyncpg://ylab:no_secure_password@localhost/resto"
-    engine = create_async_engine(SQLALCHEMY_DATABASE_URL)
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    logging.info("Tables created")
-
-
-async def drop_tables():
-    logging.info("Dropping tables")
-    SQLALCHEMY_DATABASE_URL = "postgresql+asyncpg://ylab:no_secure_password@localhost/resto"
-    engine = create_async_engine(SQLALCHEMY_DATABASE_URL)
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-    logging.info("Tables dropped")
