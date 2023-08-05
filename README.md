@@ -33,19 +33,15 @@ docker-compose -f docker-compose-test.yaml up
 
 Приложение готово к тестированию! Оно доступно на порту 8000. Основной исполняемый файл находится по адресу `/app/main.py`.
 
-Тесты находятся в директории `app/tests`. 
+Тесты находятся в директории `app/tests`.
 
-Сценарий "Проверка количества блюд и подменю в меню" находится в файле [test_api_postman_count.py](app%2Ftests%2Ftest_api_postman_count.py).
+Все тесты API находятся в [test_api_all.py](app%2Ftests%2Ftest_api_all.py) и используют reverse_url() для получения адресов.
+Все тесты из сценария "Проверка количества блюд и подменю в меню" входят в общий список тестов.
 
-Все остальные проверки API находятся в [test_api_second_part.py](app%2Ftests%2Ftest_api_second_part.py).
+Подсчет количества подменю и блюд без использования полей реализован в [menu.py](app%2Frepository%2Fmenu.py).
+Он доступен через конечную точку **`get("/api/v1/menus/ORM/{menu_id}")`**.
 
-Тесты CRUD находятся в следующих файлах:
-- [test_lists.py](app%2Ftests%2Ftest_lists.py)
-- [test_menus.py](app%2Ftests%2Ftest_menus.py)
-- [test_submenus.py](app%2Ftests%2Ftest_submenus.py)
-- [test_dishes.py](app%2Ftests%2Ftest_dishes.py)
-
-Подсчет количества подменю и блюд без использования полей реализован в [calc_submenu_and_dishes.py](app%2Fcrud%2Fcalc_submenu_and_dishes.py). Он доступен через конечную точку **`get("/api/v1/menu/{menu_id}")`**.
+[openapi.json](openapi.json) содержит описание API.
 
 ## База данных
 
