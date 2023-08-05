@@ -25,6 +25,32 @@ global_data = {
 }
 
 
+def reverse_url(route_name: str, **kwargs) -> str:
+    routes = {
+        'get_menus': '/api/v1/menus',
+        'post_menu': '/api/v1/menus',
+        'get_menu': f'/api/v1/menus/{kwargs.get("menu_id", "")}',
+        'patch_menu': f'/api/v1/menus/{kwargs.get("menu_id", "")}',
+        'delete_menu': f'/api/v1/menus/{kwargs.get("menu_id", "")}',
+        'get_menu_orm': f'/api/v1/menus/ORM/{kwargs.get("menu_id", "")}',
+        'get_submenus': f'/api/v1/menus/{kwargs.get("menu_id", "")}/submenus',
+        'post_submenu': f'/api/v1/menus/{kwargs.get("menu_id", "")}/submenus',
+        'get_submenu': f'/api/v1/menus/{kwargs.get("menu_id", "")}/submenus/{kwargs.get("submenu_id", "")}',
+        'patch_submenu': f'/api/v1/menus/{kwargs.get("menu_id", "")}/submenus/{kwargs.get("submenu_id", "")}',
+        'delete_submenu': f'/api/v1/menus/{kwargs.get("menu_id", "")}/submenus/{kwargs.get("submenu_id", "")}',
+        'get_dishes': f'/api/v1/menus/{kwargs.get("menu_id", "")}/submenus/{kwargs.get("submenu_id", "")}/dishes',
+        'post_dish': f'/api/v1/menus/{kwargs.get("menu_id", "")}/submenus/{kwargs.get("submenu_id", "")}/dishes',
+        'get_dish': f'/api/v1/menus/{kwargs.get("menu_id", "")}/submenus/'
+                    f'{kwargs.get("submenu_id", "")}/dishes/{kwargs.get("dish_id", "")}',
+        'patch_dish': f'/api/v1/menus/{kwargs.get("menu_id", "")}/submenus/'
+                      f'{kwargs.get("submenu_id", "")}/dishes/{kwargs.get("dish_id", "")}',
+        'delete_dish': f'/api/v1/menus/{kwargs.get("menu_id", "")}/submenus/'
+                       f'{kwargs.get("submenu_id", "")}/dishes/{kwargs.get("dish_id", "")}',
+    }
+
+    return str(routes.get(route_name))
+
+
 @pytest.fixture(scope='session')
 def event_loop(request):
     loop = asyncio.get_event_loop_policy().new_event_loop()
@@ -42,7 +68,7 @@ async def client() -> AsyncGenerator[AsyncClient, None]:
 async def test_aa_empty_menus():
     async with AsyncClient(app=app, base_url=URL) as client:
         global global_data
-        response = await client.get('/api/v1/menus')
+        response = await client.get(reverse_url('get_menus'))
         assert response.status_code == 200
         data = response.json()
         assert data == []
@@ -52,7 +78,7 @@ async def test_aa_empty_menus():
 async def test_ab_empty_submenus():
     async with AsyncClient(app=app, base_url=URL) as client:
         global global_data
-        response = await client.get('/api/v1/menus/8675309/submenus')
+        response = await client.get(reverse_url('get_submenus', menu_id=8675309))
         assert response.status_code == 200
         data = response.json()
         assert data == []
@@ -62,7 +88,7 @@ async def test_ab_empty_submenus():
 async def test_ac_empty_dishes():
     async with AsyncClient(app=app, base_url=URL) as client:
         global global_data
-        response = await client.get('/api/v1/menus/8675309/submenus/32167/dishes')
+        response = await client.get(reverse_url('get_dishes', menu_id=8675309, submenu_id=32167))
         assert response.status_code == 200
         data = response.json()
         assert data == []
@@ -72,7 +98,7 @@ async def test_ac_empty_dishes():
 async def test_ad_create_menu():
     async with AsyncClient(app=app, base_url=URL) as client:
         global global_data
-        response = await client.post('/api/v1/menus', json={'title': 'menu1', 'description': 'Empty'})
+        response = await client.post(reverse_url('post_menu'), json={'title': 'menu1', 'description': 'Empty'})
         assert response.status_code == 201
         data = response.json()
         global_data['menu_id'] = data['id']
@@ -87,7 +113,7 @@ async def test_ad_create_menu():
 async def test_ae_create_submenu():
     async with AsyncClient(app=app, base_url=URL) as client:
         global global_data
-        response = await client.post(f'/api/v1/menus/{global_data["menu_id"]}/submenus',
+        response = await client.post(reverse_url('post_submenu', menu_id=global_data['menu_id']),
                                      json={'title': 'sub1', 'description': 'empty'})
         assert response.status_code == 201
         data = response.json()
@@ -104,7 +130,7 @@ async def test_af_create_dish1() -> None:
     async with AsyncClient(app=app, base_url=URL) as client:
         global global_data
         response = await client.post(
-            f'/api/v1/menus/{global_data["menu_id"]}/submenus/{global_data["submenu_id"]}/dishes',
+            reverse_url('post_dish', menu_id=global_data['menu_id'], submenu_id=global_data['submenu_id']),
             json={'title': 'dish1', 'description': 'Nope', 'price': '100.23'})
         assert response.status_code == 201
         data = response.json()
@@ -123,7 +149,7 @@ async def test_ag_create_dish2() -> None:
     async with AsyncClient(app=app, base_url=URL) as client:
         global global_data
         response = await client.post(
-            f'/api/v1/menus/{global_data["menu_id"]}/submenus/{global_data["submenu_id"]}/dishes',
+            reverse_url('post_dish', menu_id=global_data['menu_id'], submenu_id=global_data['submenu_id']),
             json={'title': 'dish2', 'description': 'Nope again', 'price': '200.34'})
         assert response.status_code == 201
         data = response.json()
@@ -138,7 +164,8 @@ async def test_ag_create_dish2() -> None:
 async def test_ah_update_menu():
     async with AsyncClient(app=app, base_url=URL) as client:
         global global_data
-        response = await client.patch(f'/api/v1/menus/{global_data["menu_id"]}', json={'title': 'New_menu', 'description': 'New_d'})
+        response = await client.patch(reverse_url('patch_menu', menu_id=global_data['menu_id']),
+                                      json={'title': 'New_menu', 'description': 'New_d'})
         assert response.status_code == 200
         data = response.json()
         assert data['id'] == global_data['menu_id']
@@ -150,8 +177,10 @@ async def test_ah_update_menu():
 async def test_ai_update_submenu():
     async with AsyncClient(app=app, base_url=URL) as client:
         global global_data
-        response = await client.patch(f'/api/v1/menus/{global_data["menu_id"]}/submenus/{global_data["submenu_id"]}',
-                                      json={'title': 'New_submenu', 'description': 'New_d'})
+        response = await client.patch(
+            reverse_url('patch_submenu', menu_id=global_data['menu_id'],
+                        submenu_id=global_data['submenu_id']),
+            json={'title': 'New_submenu', 'description': 'New_d'})
         assert response.status_code == 200
         data = response.json()
         assert data['id'] == global_data['submenu_id']
@@ -163,8 +192,10 @@ async def test_ai_update_submenu():
 async def test_aj_update_dish():
     async with AsyncClient(app=app, base_url=URL) as client:
         global global_data
-        response = await client.patch(f'/api/v1/menus/{global_data["menu_id"]}/submenus/{global_data["submenu_id"]}/dishes/{global_data["dish1_id"]}',
-                                      json={'title': 'New_dish', 'description': 'New_d', 'price': '100.23'})
+        response = await client.patch(
+            reverse_url('patch_dish', menu_id=global_data['menu_id'], submenu_id=global_data['submenu_id'],
+                        dish_id=global_data['dish1_id']),
+            json={'title': 'New_dish', 'description': 'New_d', 'price': '100.23'})
         assert response.status_code == 200
         data = response.json()
         assert data['id'] == global_data['dish1_id']
@@ -177,7 +208,7 @@ async def test_aj_update_dish():
 async def test_ak_get_menu():
     async with AsyncClient(app=app, base_url=URL) as client:
         global global_data
-        response = await client.get(f'/api/v1/menus/{global_data["menu_id"]}')
+        response = await client.get(reverse_url('get_menu', menu_id=global_data['menu_id']))
         assert response.status_code == 200
         data = response.json()
         assert data['id'] == global_data['menu_id']
@@ -189,7 +220,7 @@ async def test_ak_get_menu():
 async def test_al_get_list_menus():
     async with AsyncClient(app=app, base_url=URL) as client:
         global global_data
-        response = await client.get('/api/v1/menus')
+        response = await client.get(reverse_url('get_menus'))
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, list)
@@ -203,7 +234,7 @@ async def test_al_get_list_menus():
 async def test_am_get_list_submenus():
     async with AsyncClient(app=app, base_url=URL) as client:
         global global_data
-        response = await client.get(f'/api/v1/menus/{global_data["menu_id"]}/submenus')
+        response = await client.get(reverse_url('get_submenus', menu_id=global_data['menu_id']))
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, list)
@@ -217,7 +248,8 @@ async def test_am_get_list_submenus():
 async def test_an_get_list_dishes():
     async with AsyncClient(app=app, base_url=URL) as client:
         global global_data
-        response = await client.get(f'/api/v1/menus/{global_data["menu_id"]}/submenus/{global_data["submenu_id"]}/dishes')
+        response = await client.get(
+            reverse_url('get_dishes', menu_id=global_data['menu_id'], submenu_id=global_data['submenu_id']))
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, list)
@@ -228,7 +260,8 @@ async def test_an_get_list_dishes():
 async def test_ao_get_submenu():
     async with AsyncClient(app=app, base_url=URL) as client:
         global global_data
-        response = await client.get(f'/api/v1/menus/{global_data["menu_id"]}/submenus/{global_data["submenu_id"]}')
+        response = await client.get(
+            reverse_url('get_submenu', menu_id=global_data['menu_id'], submenu_id=global_data['submenu_id']))
         assert response.status_code == 200
         data = response.json()
         assert data['id'] == global_data['submenu_id']
@@ -240,7 +273,9 @@ async def test_ao_get_submenu():
 async def test_ap_get_dish():
     async with AsyncClient(app=app, base_url=URL) as client:
         global global_data
-        response = await client.get(f'/api/v1/menus/{global_data["menu_id"]}/submenus/{global_data["submenu_id"]}/dishes/{global_data["dish1_id"]}')
+        response = await client.get(
+            reverse_url('get_dish', menu_id=global_data['menu_id'], submenu_id=global_data['submenu_id'],
+                        dish_id=global_data['dish1_id']))
         assert response.status_code == 200
         data = response.json()
         assert data['id'] == global_data['dish1_id']
@@ -253,7 +288,9 @@ async def test_ap_get_dish():
 async def test_aq_delete_dish():
     async with AsyncClient(app=app, base_url=URL) as client:
         global global_data
-        response = await client.delete(f'/api/v1/menus/{global_data["menu_id"]}/submenus/{global_data["submenu_id"]}/dishes/{global_data["dish1_id"]}')
+        response = await client.delete(
+            reverse_url('delete_dish', menu_id=global_data['menu_id'], submenu_id=global_data['submenu_id'],
+                        dish_id=global_data['dish1_id']))
         assert response.status_code == 200
 
 
@@ -261,7 +298,8 @@ async def test_aq_delete_dish():
 async def test_ar_delete_submenu():
     async with AsyncClient(app=app, base_url=URL) as client:
         global global_data
-        response = await client.delete(f'/api/v1/menus/{global_data["menu_id"]}/submenus/{global_data["submenu_id"]}')
+        response = await client.delete(
+            reverse_url('delete_submenu', menu_id=global_data['menu_id'], submenu_id=global_data['submenu_id']))
         assert response.status_code == 200
 
 
@@ -269,7 +307,7 @@ async def test_ar_delete_submenu():
 async def test_as_get_submenu_list():
     async with AsyncClient(app=app, base_url=URL) as client:
         global global_data
-        response = await client.get(f'/api/v1/menus/{global_data["menu_id"]}/submenus')
+        response = await client.get(reverse_url('get_submenus', menu_id=global_data['menu_id']))
         assert response.status_code == 200
         assert response.json() == []
 
@@ -278,7 +316,7 @@ async def test_as_get_submenu_list():
 async def test_at_get_menu_check_counts():
     async with AsyncClient(app=app, base_url=URL) as client:
         global global_data
-        response = await client.get(f'/api/v1/menus/{global_data["menu_id"]}')
+        response = await client.get(reverse_url('get_menu', menu_id=global_data['menu_id']))
         assert response.status_code == 200
         data = response.json()
         assert data['id'] == global_data['menu_id']
@@ -292,7 +330,7 @@ async def test_at_get_menu_check_counts():
 async def test_au_delete_menu():
     async with AsyncClient(app=app, base_url=URL) as client:
         global global_data
-        response = await client.delete(f'/api/v1/menus/{global_data["menu_id"]}')
+        response = await client.delete(reverse_url('delete_menu', menu_id=global_data['menu_id']))
         assert response.status_code == 200
 
 
@@ -300,6 +338,6 @@ async def test_au_delete_menu():
 async def test_av_get_menu_list():
     async with AsyncClient(app=app, base_url=URL) as client:
         global global_data
-        response = await client.get('/api/v1/menus')
+        response = await client.get(reverse_url('get_menus'))
         assert response.status_code == 200
         assert response.json() == []
