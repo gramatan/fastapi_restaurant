@@ -12,37 +12,37 @@ class DishService:
         self.cache_client = RedisCache(redis_client)
 
     async def read_dishes(self, submenu_id: int | str, menu_id: int | str):
-        cached = self.cache_client.get(('all', submenu_id, menu_id))
+        cached = self.cache_client.get(f'all:{menu_id}:{submenu_id}')
         if cached is not None:
             return cached
         else:
             data = await self.dish_repository.read_dishes(submenu_id, menu_id)
-            self.cache_client.set(('all', submenu_id, menu_id), data)
+            self.cache_client.set(f'all:{menu_id}:{submenu_id}', data)
             return data
 
     async def create_dish(self, dish_data, submenu_id: int | str, menu_id: int | str):
         data = await self.dish_repository.create_dish(dish_data, submenu_id, menu_id)
-        self.cache_client.set((submenu_id, menu_id, data.id), data)
-        self.cache_client.clear_cache('all*')
+        self.cache_client.set(f'{menu_id}:{submenu_id}:{data.id}', data)
+        self.cache_client.clear_after_change(menu_id)
         return data
 
     async def read_dish(self, dish_id: int | str, submenu_id: int | str, menu_id: int | str):
-        cached = self.cache_client.get((submenu_id, menu_id, dish_id))
+        cached = self.cache_client.get(f'{menu_id}:{submenu_id}:{dish_id}')
         if cached is not None:
             return cached
         else:
             data = await self.dish_repository.read_dish(dish_id, submenu_id, menu_id)
-            self.cache_client.set((submenu_id, menu_id, dish_id), data)
+            self.cache_client.set(f'{menu_id}:{submenu_id}:{dish_id}', data)
             return data
 
     async def update_dish(self, dish_id: int | str, dish_data, submenu_id: int | str, menu_id: int | str):
         data = await self.dish_repository.update_dish(dish_id, dish_data, submenu_id, menu_id)
-        self.cache_client.set((submenu_id, menu_id, dish_id), data)
-        self.cache_client.clear_cache('all*')
+        self.cache_client.set(f'{menu_id}:{submenu_id}:{dish_id}', data)
+        self.cache_client.clear_after_change(menu_id)
         return data
 
     async def del_dish(self, dish_id: int | str, submenu_id: int | str, menu_id: int | str):
         data = await self.dish_repository.del_dish(dish_id, submenu_id, menu_id)
-        self.cache_client.delete((submenu_id, menu_id, dish_id))
-        self.cache_client.clear_cache('all*')
+        self.cache_client.delete(f'{menu_id}:{submenu_id}:{dish_id}')
+        self.cache_client.clear_after_change(menu_id)
         return data
