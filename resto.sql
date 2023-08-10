@@ -356,4 +356,3 @@ ALTER TABLE ONLY public.submenus
 --
 -- PostgreSQL database dump complete
 --
-

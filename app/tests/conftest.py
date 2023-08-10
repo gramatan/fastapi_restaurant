@@ -5,8 +5,8 @@
 # SQLALCHEMY_DATABASE_URL = "postgresql+asyncpg://ylab:no_secure_password@localhost/resto"
 
 # docker
-SQLALCHEMY_DATABASE_URL = "postgresql+asyncpg://ylab:no_secure_password@db/resto"
-URL = "http://web:8000"
+SQLALCHEMY_DATABASE_URL = 'postgresql+asyncpg://ylab:no_secure_password@db/resto'
+URL = 'http://web:8000'
 
 # docker
 # SQLALCHEMY_DATABASE_URL = "postgresql+asyncpg://ylab:no_secure_password@db-test/resto"
