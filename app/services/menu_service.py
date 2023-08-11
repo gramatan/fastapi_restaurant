@@ -3,6 +3,7 @@ from fastapi import BackgroundTasks, Depends
 
 from app.repository.menu import MenuRepository
 from app.repository.redis_cache import AsyncRedisCache, get_async_redis_client
+from app.schemas.full_menu import FullMenuListResponse
 
 
 class MenuService:
@@ -51,3 +52,7 @@ class MenuService:
 
     async def orm_read_menu(self, menu_id: int | str):
         return await self.menu_repository.orm_read_menu(menu_id)
+
+    async def read_full_menus(self) -> FullMenuListResponse:
+        menu_data = await self.menu_repository.get_full_menus()
+        return FullMenuListResponse(menus=menu_data)

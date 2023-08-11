@@ -1,6 +1,7 @@
 from fastapi import Depends
 from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.database.base import Dish, Menu, SubMenu
 from app.database.utils import get_db
@@ -81,3 +82,36 @@ class MenuRepository:
         menu_dict['dishes_count'] = dishes_count
 
         return menu_dict
+
+    async def get_full_menus(self):
+        result = await self.db.execute(
+            select(Menu).options(
+                selectinload(Menu.submenus).selectinload(SubMenu.dishes)
+            )
+        )
+        menus = result.scalars().all()
+
+        menus_data = []
+        for menu in menus:
+            menu_data = {
+                'id': menu.id,
+                'title': menu.title,
+                'description': menu.description,
+                'submenus': [
+                    {
+                        'id': submenu.id,
+                        'title': submenu.title,
+                        'description': submenu.description,
+                        'dishes': [
+                            {
+                                'id': dish.id,
+                                'title': dish.title,
+                                'description': dish.description,
+                                'price': str(dish.price)
+                            } for dish in submenu.dishes
+                        ]
+                    } for submenu in menu.submenus
+                ]
+            }
+            menus_data.append(menu_data)
+        return menus_data

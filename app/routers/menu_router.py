@@ -40,3 +40,9 @@ async def delete_menu(menu_id: int | str, response: MenuService = Depends(),
 async def get_menu_orm(menu_id: int | str, response: MenuService = Depends(),
                        background_tasks: BackgroundTasks = BackgroundTasks()) -> MenuResponse:
     return await response.orm_read_menu(menu_id)
+
+
+@router.get('/all')
+async def get_full_menus(response: MenuService = Depends(),
+                         background_tasks: BackgroundTasks = BackgroundTasks()):
+    return await response.read_full_menus()
