@@ -28,9 +28,7 @@ class DishRepository:
     async def create_dish(self, dish: DishBase, submenu_id: int | str, menu_id: int | str) -> DishResponse:
         menu_id = int(menu_id)
         submenu_id = int(submenu_id)
-        db_menu, db_submenu = await validate_menu_submenu_dish(self.db, menu_id, submenu_id)
-        db_submenu.dishes_count += 1
-        db_menu.dishes_count += 1
+        await validate_menu_submenu_dish(self.db, menu_id, submenu_id)
         await self.db.commit()
 
         db_dish = Dish(submenu_id=submenu_id, **dish.model_dump())
@@ -78,10 +76,8 @@ class DishRepository:
         menu_id = int(menu_id)
         submenu_id = int(submenu_id)
         dish_id = int(dish_id)
-        db_menu, db_submenu, db_dish = await validate_menu_submenu_dish(self.db, menu_id, submenu_id, dish_id)
+        await validate_menu_submenu_dish(self.db, menu_id, submenu_id, dish_id)
 
-        db_submenu.dishes_count -= 1
-        db_menu.dishes_count -= 1
         await self.db.commit()
 
         await self.db.execute(delete(Dish).where(Dish.id == dish_id))
