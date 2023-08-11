@@ -12,34 +12,39 @@ from app.schemas.menu import MenuBase, MenuResponse
 class MenuRepository:
     def __init__(self, db: AsyncSession = Depends(get_db)):
         self.db = db
+        self.submenus_count_query = select(func.count(SubMenu.id)).where(
+            SubMenu.menu_id == Menu.id).label('submenus_count')
+        self.dishes_count_query = select(func.count(Dish.id)).where(Dish.submenu_id == SubMenu.id,
+                                                                    SubMenu.menu_id == Menu.id).label('dishes_count')
 
     async def read_menus(self) -> list[MenuResponse]:
-        db_request = await self.db.execute(select(Menu))
-        menus = db_request.scalars().all()
-        menus_list: list[MenuResponse] = list()
-        for menu in menus:
-            menu_response = MenuResponse(**menu.__dict__)
-            menu_response.id = str(menu_response.id)
-            menus_list.append(menu_response)
-        return menus_list
+        result = await self.db.execute(
+            select(Menu, self.submenus_count_query, self.dishes_count_query)
+            .group_by(Menu.id)
+        )
+        menus_data = result.fetchall()
+        return [MenuResponse(id=str(data.Menu.id), title=data.Menu.title, description=data.Menu.description,
+                             submenus_count=data.submenus_count, dishes_count=data.dishes_count) for data in menus_data]
 
     async def create_menu(self, menu: MenuBase) -> MenuResponse:
         db_menu = Menu(**menu.model_dump())
         self.db.add(db_menu)
         await self.db.commit()
         await self.db.refresh(db_menu)
-        db_menu_dict = db_menu.__dict__
-        db_menu_dict['id'] = str(db_menu_dict['id'])
-
-        return MenuResponse(**db_menu_dict)
+        return MenuResponse(id=str(db_menu.id), title=db_menu.title, description=db_menu.description,
+                            submenus_count=0, dishes_count=0)
 
     async def read_menu(self, menu_id: int | str) -> MenuResponse:
         menu_id = int(menu_id)
-        db_menu = await validate_menu_submenu_dish(self.db, menu_id)
-        await self.db.refresh(db_menu)
-        menu_dict = db_menu.__dict__
-        menu_dict['id'] = str(menu_dict['id'])
-        return MenuResponse(**menu_dict)
+        await validate_menu_submenu_dish(self.db, menu_id)
+        result = await self.db.execute(
+            select(Menu, self.submenus_count_query, self.dishes_count_query)
+            .where(Menu.id == menu_id)
+            .group_by(Menu.id)
+        )
+        data = result.fetchone()
+        return MenuResponse(id=str(data.Menu.id), title=data.Menu.title, description=data.Menu.description,
+                            submenus_count=data.submenus_count, dishes_count=data.dishes_count)
 
     async def update_menu(self, menu_id: int | str, menu: MenuBase) -> MenuResponse:
         menu_id = int(menu_id)
@@ -48,9 +53,13 @@ class MenuRepository:
             setattr(db_menu, var, value) if value else None
         await self.db.commit()
         await self.db.refresh(db_menu)
-        db_menu_dict = db_menu.__dict__
-        db_menu_dict['id'] = str(db_menu_dict['id'])
-        return MenuResponse(**db_menu_dict)
+        result = await self.db.execute(
+            select(self.submenus_count_query, self.dishes_count_query)
+            .where(Menu.id == menu_id)
+        )
+        data = result.fetchone()
+        return MenuResponse(id=str(db_menu.id), title=db_menu.title, description=db_menu.description,
+                            submenus_count=data.submenus_count, dishes_count=data.dishes_count)
 
     async def del_menu(self, menu_id: int | str) -> dict:
         menu_id = int(menu_id)
