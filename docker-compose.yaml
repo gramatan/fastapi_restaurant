@@ -22,17 +22,26 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: ylab_fastapi
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --reload-exclude "admin/*"
     environment:
+      - RUN_BACKGROUND_TASK=True
       - PYTHONPATH=/app
       - SQLALCHEMY_DATABASE_URL=postgresql+asyncpg://ylab:no_secure_password@db/resto
     volumes:
       - .:/app
+      - /d/GitHub/fastapi_restaurant/app/admin:/app/admin
     ports:
       - "8000:8000"
     depends_on:
       db:
         condition: service_healthy
+
+  rabbitmq:
+    container_name: ylab_rabbitmq
+    image: "rabbitmq"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
 
   redis:
     container_name: ylab_redis

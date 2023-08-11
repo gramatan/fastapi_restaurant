@@ -14,3 +14,6 @@ pre-commit==3.3.3
 redis==4.6.0
 types-redis==4.6.0.3
 mypy==1.4.1
+
+celery[rabbitmq]==5.3.1
+openpyxl==3.1.2
