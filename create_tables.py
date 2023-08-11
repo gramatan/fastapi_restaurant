@@ -1,10 +1,25 @@
 import asyncio
 import logging
 
+import redis  # type: ignore
+
 from app.database.utils import create_tables, drop_tables
-from app.repository.redis_cache import RedisCache, get_redis_client
 
 logging.basicConfig(level=logging.INFO)
+
+
+def get_redis_client():
+    return redis.Redis(host='localhost', port=6379, db=0)
+
+
+class RedisCache:
+    def __init__(self, redis_client: redis.Redis) -> None:
+        self.redis_client = redis_client
+        self.ttl = 1800
+
+    def clear_cache(self, pattern: str):
+        for key in self.redis_client.scan_iter(pattern):
+            self.redis_client.delete(key)
 
 
 async def main():
