@@ -1,20 +1,20 @@
 import pickle
 from typing import Any
 
-import aioredis
+import redis.asyncio as redis  # type: ignore
 from fastapi import BackgroundTasks, Depends
 
 
 def get_async_redis_pool():
-    return aioredis.from_url('redis://redis:6379/0', decode_responses=False)
+    return redis.from_url('redis://redis:6379/0', decode_responses=False)
 
 
-async def get_async_redis_client(redis_pool: aioredis.Redis = Depends(get_async_redis_pool)):
+async def get_async_redis_client(redis_pool: redis.Redis = Depends(get_async_redis_pool)):
     return redis_pool
 
 
 class AsyncRedisCache:
-    def __init__(self, redis_pool: aioredis.Redis = Depends(get_async_redis_pool)) -> None:
+    def __init__(self, redis_pool: redis.Redis = Depends(get_async_redis_pool)) -> None:
         self.redis_pool = redis_pool
         self.ttl = 1800
 

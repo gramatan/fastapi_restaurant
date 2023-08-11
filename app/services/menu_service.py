@@ -1,4 +1,4 @@
-import aioredis
+import redis.asyncio as redis  # type: ignore
 from fastapi import BackgroundTasks, Depends
 
 from app.repository.menu import MenuRepository
@@ -8,7 +8,7 @@ from app.schemas.full_menu import FullMenuListResponse
 
 class MenuService:
     def __init__(self, menu_repository: MenuRepository = Depends(),
-                 redis_client: aioredis.Redis = Depends(get_async_redis_client),
+                 redis_client: redis.Redis = Depends(get_async_redis_client),
                  background_tasks: BackgroundTasks = None):
         self.menu_repository = menu_repository
         self.cache_client = AsyncRedisCache(redis_client)

@@ -1,4 +1,4 @@
-import aioredis
+import redis.asyncio as redis  # type: ignore
 from fastapi import BackgroundTasks, Depends
 
 from app.repository.dish import DishRepository
@@ -8,7 +8,7 @@ from app.repository.redis_cache import AsyncRedisCache, get_async_redis_client
 class DishService:
     def __init__(self,
                  dish_repository: DishRepository = Depends(),
-                 redis_client: aioredis.Redis = Depends(get_async_redis_client),
+                 redis_client: redis.Redis = Depends(get_async_redis_client),
                  background_tasks: BackgroundTasks = None):
         self.dish_repository = dish_repository
         self.cache_client = AsyncRedisCache(redis_client)
