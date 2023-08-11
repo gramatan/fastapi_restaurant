@@ -2,7 +2,7 @@ import pickle
 from typing import Any
 
 import aioredis
-from fastapi import Depends
+from fastapi import BackgroundTasks, Depends
 
 
 def get_async_redis_pool():
@@ -24,18 +24,27 @@ class AsyncRedisCache:
             return pickle.loads(data)
         return None
 
-    async def set(self, key: str, value: Any) -> bool:
+    async def set(self, key: str, value: Any, background_tasks: BackgroundTasks) -> None:
         data = pickle.dumps(value)
-        return await self.redis_pool.setex(key, self.ttl, data)
+        background_tasks.add_task(self._set_cache, key, data)
 
-    async def delete(self, key: str) -> int:
-        return await self.redis_pool.delete(key)
+    async def _set_cache(self, key: str, data: Any) -> None:
+        await self.redis_pool.setex(key, self.ttl, data)
 
-    async def clear_cache(self, pattern: str):
+    async def delete(self, key: str, background_tasks: BackgroundTasks) -> None:
+        background_tasks.add_task(self._delete_cache, key)
+
+    async def _delete_cache(self, key: str) -> None:
+        await self.redis_pool.delete(key)
+
+    async def clear_cache(self, pattern: str, background_tasks: BackgroundTasks) -> None:
         keys = [key async for key in self.redis_pool.scan_iter(pattern)]
         if keys:
-            await self.redis_pool.delete(*keys)
+            background_tasks.add_task(self._clear_keys, keys)
 
-    async def clear_after_change(self, menu_id: int | str):
-        await self.clear_cache(f'{menu_id}*')
-        await self.clear_cache('all*')
+    async def _clear_keys(self, keys: list[str]) -> None:
+        await self.redis_pool.delete(*keys)
+
+    async def clear_after_change(self, menu_id: int | str, background_tasks: BackgroundTasks) -> None:
+        await self.clear_cache(f'{menu_id}*', background_tasks)
+        await self.clear_cache('all*', background_tasks)
