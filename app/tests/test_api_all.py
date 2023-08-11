@@ -5,7 +5,7 @@ import pytest
 from httpx import AsyncClient
 
 from app.main import app
-from app.tests.conftest import URL
+from app.tests.conftest import URL, reverse_url
 
 global_data = {
     'menu_id': None,
@@ -23,32 +23,6 @@ global_data = {
     'dish2_description': None,
     'dish2_price': None,
 }
-
-
-def reverse_url(route_name: str, **kwargs) -> str:
-    routes = {
-        'get_menus': '/api/v1/menus',
-        'post_menu': '/api/v1/menus',
-        'get_menu': f'/api/v1/menus/{kwargs.get("menu_id", "")}',
-        'patch_menu': f'/api/v1/menus/{kwargs.get("menu_id", "")}',
-        'delete_menu': f'/api/v1/menus/{kwargs.get("menu_id", "")}',
-        'get_menu_orm': f'/api/v1/menus/ORM/{kwargs.get("menu_id", "")}',
-        'get_submenus': f'/api/v1/menus/{kwargs.get("menu_id", "")}/submenus',
-        'post_submenu': f'/api/v1/menus/{kwargs.get("menu_id", "")}/submenus',
-        'get_submenu': f'/api/v1/menus/{kwargs.get("menu_id", "")}/submenus/{kwargs.get("submenu_id", "")}',
-        'patch_submenu': f'/api/v1/menus/{kwargs.get("menu_id", "")}/submenus/{kwargs.get("submenu_id", "")}',
-        'delete_submenu': f'/api/v1/menus/{kwargs.get("menu_id", "")}/submenus/{kwargs.get("submenu_id", "")}',
-        'get_dishes': f'/api/v1/menus/{kwargs.get("menu_id", "")}/submenus/{kwargs.get("submenu_id", "")}/dishes',
-        'post_dish': f'/api/v1/menus/{kwargs.get("menu_id", "")}/submenus/{kwargs.get("submenu_id", "")}/dishes',
-        'get_dish': f'/api/v1/menus/{kwargs.get("menu_id", "")}/submenus/'
-                    f'{kwargs.get("submenu_id", "")}/dishes/{kwargs.get("dish_id", "")}',
-        'patch_dish': f'/api/v1/menus/{kwargs.get("menu_id", "")}/submenus/'
-                      f'{kwargs.get("submenu_id", "")}/dishes/{kwargs.get("dish_id", "")}',
-        'delete_dish': f'/api/v1/menus/{kwargs.get("menu_id", "")}/submenus/'
-                       f'{kwargs.get("submenu_id", "")}/dishes/{kwargs.get("dish_id", "")}',
-    }
-
-    return str(routes.get(route_name))
 
 
 @pytest.fixture(scope='session')
@@ -341,3 +315,102 @@ async def test_av_get_menu_list():
         response = await client.get(reverse_url('get_menus'))
         assert response.status_code == 200
         assert response.json() == []
+
+
+@pytest.mark.asyncio
+async def test_aw_get_all():
+    async with AsyncClient(app=app, base_url=URL) as client:
+        response = await client.post(reverse_url('post_menu'), json={'title': 'Menu 1', 'description': 'Description 1'})
+        assert response.status_code == 201
+        menu1_data = response.json()
+
+    async with AsyncClient(app=app, base_url=URL) as client:
+        response = await client.post(reverse_url('post_menu'), json={'title': 'Menu 2', 'description': 'Description 2'})
+        assert response.status_code == 201
+        menu2_data = response.json()
+
+    async with AsyncClient(app=app, base_url=URL) as client:
+        response = await client.post(reverse_url('post_submenu', menu_id=menu2_data['id']),
+                                     json={'title': 'SubMenu 2.1', 'description': 'SubMenu Description 2.1'})
+        assert response.status_code == 201
+
+    async with AsyncClient(app=app, base_url=URL) as client:
+        response = await client.post(reverse_url('post_menu'), json={'title': 'Menu 3', 'description': 'Description 3'})
+        assert response.status_code == 201
+        menu3_data = response.json()
+
+    async with AsyncClient(app=app, base_url=URL) as client:
+        response = await client.post(reverse_url('post_submenu', menu_id=menu3_data['id']),
+                                     json={'title': 'SubMenu 3.1', 'description': 'SubMenu Description 3.1'})
+        assert response.status_code == 201
+        submenu3_1_data = response.json()
+
+    async with AsyncClient(app=app, base_url=URL) as client:
+        response = await client.post(reverse_url('post_dish', menu_id=menu3_data['id'], submenu_id=submenu3_1_data['id']),
+                                     json={'title': 'Dish 3.1.1', 'description': 'Dish Description 3.1.1', 'price': '100.23'})
+        assert response.status_code == 201
+
+    async with AsyncClient(app=app, base_url=URL) as client:
+        response = await client.post(reverse_url('post_dish', menu_id=menu3_data['id'], submenu_id=submenu3_1_data['id']),
+                                     json={'title': 'Dish 3.1.2', 'description': 'Dish Description 3.1.2', 'price': '110.23'})
+        assert response.status_code == 201
+
+    async with AsyncClient(app=app, base_url=URL) as client:
+        response = await client.post(reverse_url('post_submenu', menu_id=menu3_data['id']),
+                                     json={'title': 'SubMenu 3.2', 'description': 'SubMenu Description 3.2'})
+        assert response.status_code == 201
+        submenu3_2_data = response.json()
+
+    async with AsyncClient(app=app, base_url=URL) as client:
+        response = await client.get(reverse_url('all'))
+        assert response.status_code == 200
+        full_data = response.json()
+        assert isinstance(full_data, dict)
+        assert 'menus' in full_data
+
+        assert len(full_data['menus']) >= 3
+
+        for menu in full_data['menus']:
+            if menu['id'] == menu1_data['id']:
+                assert menu['title'] == 'Menu 1'
+                assert menu['description'] == 'Description 1'
+                assert 'submenus' not in menu
+
+            elif menu['id'] == menu2_data['id']:
+                assert menu['title'] == 'Menu 2'
+                assert menu['description'] == 'Description 2'
+                assert len(menu['submenus']) == 1
+
+            elif menu['id'] == menu3_data['id']:
+                assert menu['title'] == 'Menu 3'
+                assert menu['description'] == 'Description 3'
+                assert len(menu['submenus']) == 2
+
+                for submenu in menu['submenus']:
+                    if submenu['id'] == submenu3_1_data['id']:
+                        assert submenu['title'] == 'SubMenu 3.1'
+                        assert submenu['description'] == 'SubMenu Description 3.1'
+                        assert len(submenu['dishes']) == 2
+
+                    elif submenu['id'] == submenu3_2_data['id']:
+                        assert submenu['title'] == 'SubMenu 3.2'
+                        assert submenu['description'] == 'SubMenu Description 3.2'
+                        assert 'dishes' not in submenu
+
+    async with AsyncClient(app=app, base_url=URL) as client:
+        await client.delete(reverse_url('delete_menu', menu_id=menu1_data['id']))
+
+    async with AsyncClient(app=app, base_url=URL) as client:
+        await client.delete(reverse_url('delete_menu', menu_id=menu2_data['id']))
+
+    async with AsyncClient(app=app, base_url=URL) as client:
+        await client.delete(reverse_url('delete_menu', menu_id=menu3_data['id']))
+
+    async with AsyncClient(app=app, base_url=URL) as client:
+        response = await client.get(reverse_url('all'))
+        assert response.status_code == 200
+        full_data = response.json()
+        assert isinstance(full_data, dict)
+        assert 'menus' in full_data
+
+        assert len(full_data['menus']) == 0
