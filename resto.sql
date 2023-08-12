@@ -5,7 +5,7 @@
 -- Dumped from database version 15.1
 -- Dumped by pg_dump version 15.2
 
--- Started on 2023-08-11 21:16:50
+-- Started on 2023-08-11 21:49:59
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -23,7 +23,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- TOC entry 219 (class 1259 OID 16517)
+-- TOC entry 219 (class 1259 OID 16474)
 -- Name: dishes; Type: TABLE; Schema: public; Owner: ylab
 --
 
@@ -40,7 +40,7 @@ CREATE TABLE public.dishes (
 ALTER TABLE public.dishes OWNER TO ylab;
 
 --
--- TOC entry 218 (class 1259 OID 16516)
+-- TOC entry 218 (class 1259 OID 16473)
 -- Name: dishes_id_seq; Type: SEQUENCE; Schema: public; Owner: ylab
 --
 
@@ -56,7 +56,7 @@ CREATE SEQUENCE public.dishes_id_seq
 ALTER TABLE public.dishes_id_seq OWNER TO ylab;
 
 --
--- TOC entry 3386 (class 0 OID 0)
+-- TOC entry 3382 (class 0 OID 0)
 -- Dependencies: 218
 -- Name: dishes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: ylab
 --
@@ -65,7 +65,7 @@ ALTER SEQUENCE public.dishes_id_seq OWNED BY public.dishes.id;
 
 
 --
--- TOC entry 215 (class 1259 OID 16484)
+-- TOC entry 215 (class 1259 OID 16443)
 -- Name: menus; Type: TABLE; Schema: public; Owner: ylab
 --
 
@@ -80,7 +80,7 @@ CREATE TABLE public.menus (
 ALTER TABLE public.menus OWNER TO ylab;
 
 --
--- TOC entry 214 (class 1259 OID 16483)
+-- TOC entry 214 (class 1259 OID 16442)
 -- Name: menus_id_seq; Type: SEQUENCE; Schema: public; Owner: ylab
 --
 
@@ -96,7 +96,7 @@ CREATE SEQUENCE public.menus_id_seq
 ALTER TABLE public.menus_id_seq OWNER TO ylab;
 
 --
--- TOC entry 3387 (class 0 OID 0)
+-- TOC entry 3383 (class 0 OID 0)
 -- Dependencies: 214
 -- Name: menus_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: ylab
 --
@@ -105,7 +105,7 @@ ALTER SEQUENCE public.menus_id_seq OWNED BY public.menus.id;
 
 
 --
--- TOC entry 217 (class 1259 OID 16498)
+-- TOC entry 217 (class 1259 OID 16457)
 -- Name: submenus; Type: TABLE; Schema: public; Owner: ylab
 --
 
@@ -121,7 +121,7 @@ CREATE TABLE public.submenus (
 ALTER TABLE public.submenus OWNER TO ylab;
 
 --
--- TOC entry 216 (class 1259 OID 16497)
+-- TOC entry 216 (class 1259 OID 16456)
 -- Name: submenus_id_seq; Type: SEQUENCE; Schema: public; Owner: ylab
 --
 
@@ -137,7 +137,7 @@ CREATE SEQUENCE public.submenus_id_seq
 ALTER TABLE public.submenus_id_seq OWNER TO ylab;
 
 --
--- TOC entry 3388 (class 0 OID 0)
+-- TOC entry 3384 (class 0 OID 0)
 -- Dependencies: 216
 -- Name: submenus_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: ylab
 --
@@ -146,7 +146,7 @@ ALTER SEQUENCE public.submenus_id_seq OWNED BY public.submenus.id;
 
 
 --
--- TOC entry 3208 (class 2604 OID 16520)
+-- TOC entry 3208 (class 2604 OID 16477)
 -- Name: dishes id; Type: DEFAULT; Schema: public; Owner: ylab
 --
 
@@ -154,7 +154,7 @@ ALTER TABLE ONLY public.dishes ALTER COLUMN id SET DEFAULT nextval('public.dishe
 
 
 --
--- TOC entry 3206 (class 2604 OID 16487)
+-- TOC entry 3206 (class 2604 OID 16446)
 -- Name: menus id; Type: DEFAULT; Schema: public; Owner: ylab
 --
 
@@ -162,7 +162,7 @@ ALTER TABLE ONLY public.menus ALTER COLUMN id SET DEFAULT nextval('public.menus_
 
 
 --
--- TOC entry 3207 (class 2604 OID 16501)
+-- TOC entry 3207 (class 2604 OID 16460)
 -- Name: submenus id; Type: DEFAULT; Schema: public; Owner: ylab
 --
 
@@ -170,7 +170,7 @@ ALTER TABLE ONLY public.submenus ALTER COLUMN id SET DEFAULT nextval('public.sub
 
 
 --
--- TOC entry 3380 (class 0 OID 16517)
+-- TOC entry 3376 (class 0 OID 16474)
 -- Dependencies: 219
 -- Data for Name: dishes; Type: TABLE DATA; Schema: public; Owner: ylab
 --
@@ -180,7 +180,7 @@ COPY public.dishes (id, manual_id, title, description, price, submenu_id) FROM s
 
 
 --
--- TOC entry 3376 (class 0 OID 16484)
+-- TOC entry 3372 (class 0 OID 16443)
 -- Dependencies: 215
 -- Data for Name: menus; Type: TABLE DATA; Schema: public; Owner: ylab
 --
@@ -190,7 +190,7 @@ COPY public.menus (id, manual_id, title, description) FROM stdin;
 
 
 --
--- TOC entry 3378 (class 0 OID 16498)
+-- TOC entry 3374 (class 0 OID 16457)
 -- Dependencies: 217
 -- Data for Name: submenus; Type: TABLE DATA; Schema: public; Owner: ylab
 --
@@ -200,7 +200,7 @@ COPY public.submenus (id, manual_id, title, description, menu_id) FROM stdin;
 
 
 --
--- TOC entry 3389 (class 0 OID 0)
+-- TOC entry 3385 (class 0 OID 0)
 -- Dependencies: 218
 -- Name: dishes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ylab
 --
@@ -209,7 +209,7 @@ SELECT pg_catalog.setval('public.dishes_id_seq', 1, false);
 
 
 --
--- TOC entry 3390 (class 0 OID 0)
+-- TOC entry 3386 (class 0 OID 0)
 -- Dependencies: 214
 -- Name: menus_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ylab
 --
@@ -218,7 +218,7 @@ SELECT pg_catalog.setval('public.menus_id_seq', 1, false);
 
 
 --
--- TOC entry 3391 (class 0 OID 0)
+-- TOC entry 3387 (class 0 OID 0)
 -- Dependencies: 216
 -- Name: submenus_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ylab
 --
@@ -227,16 +227,7 @@ SELECT pg_catalog.setval('public.submenus_id_seq', 1, false);
 
 
 --
--- TOC entry 3224 (class 2606 OID 16526)
--- Name: dishes dishes_manual_id_key; Type: CONSTRAINT; Schema: public; Owner: ylab
---
-
-ALTER TABLE ONLY public.dishes
-    ADD CONSTRAINT dishes_manual_id_key UNIQUE (manual_id);
-
-
---
--- TOC entry 3226 (class 2606 OID 16524)
+-- TOC entry 3222 (class 2606 OID 16481)
 -- Name: dishes dishes_pkey; Type: CONSTRAINT; Schema: public; Owner: ylab
 --
 
@@ -245,7 +236,7 @@ ALTER TABLE ONLY public.dishes
 
 
 --
--- TOC entry 3213 (class 2606 OID 16493)
+-- TOC entry 3213 (class 2606 OID 16452)
 -- Name: menus menus_manual_id_key; Type: CONSTRAINT; Schema: public; Owner: ylab
 --
 
@@ -254,7 +245,7 @@ ALTER TABLE ONLY public.menus
 
 
 --
--- TOC entry 3215 (class 2606 OID 16491)
+-- TOC entry 3215 (class 2606 OID 16450)
 -- Name: menus menus_pkey; Type: CONSTRAINT; Schema: public; Owner: ylab
 --
 
@@ -263,16 +254,7 @@ ALTER TABLE ONLY public.menus
 
 
 --
--- TOC entry 3220 (class 2606 OID 16507)
--- Name: submenus submenus_manual_id_key; Type: CONSTRAINT; Schema: public; Owner: ylab
---
-
-ALTER TABLE ONLY public.submenus
-    ADD CONSTRAINT submenus_manual_id_key UNIQUE (manual_id);
-
-
---
--- TOC entry 3222 (class 2606 OID 16505)
+-- TOC entry 3220 (class 2606 OID 16464)
 -- Name: submenus submenus_pkey; Type: CONSTRAINT; Schema: public; Owner: ylab
 --
 
@@ -281,7 +263,7 @@ ALTER TABLE ONLY public.submenus
 
 
 --
--- TOC entry 3227 (class 1259 OID 16533)
+-- TOC entry 3223 (class 1259 OID 16487)
 -- Name: ix_dishes_description; Type: INDEX; Schema: public; Owner: ylab
 --
 
@@ -289,7 +271,7 @@ CREATE INDEX ix_dishes_description ON public.dishes USING btree (description);
 
 
 --
--- TOC entry 3228 (class 1259 OID 16532)
+-- TOC entry 3224 (class 1259 OID 16490)
 -- Name: ix_dishes_id; Type: INDEX; Schema: public; Owner: ylab
 --
 
@@ -297,7 +279,7 @@ CREATE INDEX ix_dishes_id ON public.dishes USING btree (id);
 
 
 --
--- TOC entry 3229 (class 1259 OID 16534)
+-- TOC entry 3225 (class 1259 OID 16488)
 -- Name: ix_dishes_price; Type: INDEX; Schema: public; Owner: ylab
 --
 
@@ -305,7 +287,7 @@ CREATE INDEX ix_dishes_price ON public.dishes USING btree (price);
 
 
 --
--- TOC entry 3230 (class 1259 OID 16535)
+-- TOC entry 3226 (class 1259 OID 16489)
 -- Name: ix_dishes_title; Type: INDEX; Schema: public; Owner: ylab
 --
 
@@ -313,7 +295,7 @@ CREATE INDEX ix_dishes_title ON public.dishes USING btree (title);
 
 
 --
--- TOC entry 3209 (class 1259 OID 16495)
+-- TOC entry 3209 (class 1259 OID 16453)
 -- Name: ix_menus_description; Type: INDEX; Schema: public; Owner: ylab
 --
 
@@ -321,7 +303,7 @@ CREATE INDEX ix_menus_description ON public.menus USING btree (description);
 
 
 --
--- TOC entry 3210 (class 1259 OID 16496)
+-- TOC entry 3210 (class 1259 OID 16454)
 -- Name: ix_menus_id; Type: INDEX; Schema: public; Owner: ylab
 --
 
@@ -329,7 +311,7 @@ CREATE INDEX ix_menus_id ON public.menus USING btree (id);
 
 
 --
--- TOC entry 3211 (class 1259 OID 16494)
+-- TOC entry 3211 (class 1259 OID 16455)
 -- Name: ix_menus_title; Type: INDEX; Schema: public; Owner: ylab
 --
 
@@ -337,7 +319,7 @@ CREATE INDEX ix_menus_title ON public.menus USING btree (title);
 
 
 --
--- TOC entry 3216 (class 1259 OID 16514)
+-- TOC entry 3216 (class 1259 OID 16472)
 -- Name: ix_submenus_description; Type: INDEX; Schema: public; Owner: ylab
 --
 
@@ -345,7 +327,7 @@ CREATE INDEX ix_submenus_description ON public.submenus USING btree (description
 
 
 --
--- TOC entry 3217 (class 1259 OID 16513)
+-- TOC entry 3217 (class 1259 OID 16470)
 -- Name: ix_submenus_id; Type: INDEX; Schema: public; Owner: ylab
 --
 
@@ -353,7 +335,7 @@ CREATE INDEX ix_submenus_id ON public.submenus USING btree (id);
 
 
 --
--- TOC entry 3218 (class 1259 OID 16515)
+-- TOC entry 3218 (class 1259 OID 16471)
 -- Name: ix_submenus_title; Type: INDEX; Schema: public; Owner: ylab
 --
 
@@ -361,7 +343,7 @@ CREATE INDEX ix_submenus_title ON public.submenus USING btree (title);
 
 
 --
--- TOC entry 3232 (class 2606 OID 16527)
+-- TOC entry 3228 (class 2606 OID 16482)
 -- Name: dishes dishes_submenu_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: ylab
 --
 
@@ -370,7 +352,7 @@ ALTER TABLE ONLY public.dishes
 
 
 --
--- TOC entry 3231 (class 2606 OID 16508)
+-- TOC entry 3227 (class 2606 OID 16465)
 -- Name: submenus submenus_menu_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: ylab
 --
 
@@ -378,7 +360,7 @@ ALTER TABLE ONLY public.submenus
     ADD CONSTRAINT submenus_menu_id_fkey FOREIGN KEY (menu_id) REFERENCES public.menus(id) ON DELETE CASCADE;
 
 
--- Completed on 2023-08-11 21:16:50
+-- Completed on 2023-08-11 21:50:00
 
 --
 -- PostgreSQL database dump complete
