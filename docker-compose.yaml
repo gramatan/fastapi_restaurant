@@ -43,6 +43,8 @@ services:
     depends_on:
       - rabbitmq
       - db
+      - web
+      - redis
     command: [ "celery", "-A", "admin_task:celery_app", "beat", "--loglevel=info" ]
 
   celery_worker:
@@ -57,7 +59,9 @@ services:
     depends_on:
       - rabbitmq
       - db
-    command: [ "celery", "-A", "admin_task:celery_app", "worker", "--loglevel=info", "-P", "solo", "-c", "1"]
+      - web
+      - redis
+    command: [ "celery", "-A", "admin_task:celery_app", "worker", "--loglevel=info", "--concurrency", "1", "-P", "solo"]
 
   rabbitmq:
     container_name: ylab_rabbitmq
