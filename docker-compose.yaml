@@ -24,21 +24,44 @@ services:
     container_name: ylab_fastapi
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     environment:
-      - RUN_BACKGROUND_TASK=True
       - PYTHONPATH=/app
       - SQLALCHEMY_DATABASE_URL=postgresql+asyncpg://ylab:no_secure_password@db/resto
     volumes:
       - .:/app
-      - /d/GitHub/fastapi_restaurant/app/admin:/admin
     ports:
       - "8000:8000"
     depends_on:
-      db:
-        condition: service_healthy
+      - db
+
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile-celery
+    container_name: ylab_celery_beat
+    environment:
+      - BROKER_URL=pyamqp://guest:guest@rabbitmq:5672//
+    depends_on:
+      - rabbitmq
+      - db
+    command: [ "celery", "-A", "admin_task:celery_app", "beat", "--loglevel=info" ]
+
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile-celery
+    container_name: ylab_celery_worker
+    volumes:
+      - /d/GitHub/fastapi_restaurant/admin:/app/admin
+    environment:
+      - BROKER_URL=pyamqp://guest:guest@rabbitmq:5672//
+    depends_on:
+      - rabbitmq
+      - db
+    command: [ "celery", "-A", "admin_task:celery_app", "worker", "--loglevel=info", "-P", "solo", "-c", "1"]
 
   rabbitmq:
     container_name: ylab_rabbitmq
-    image: "rabbitmq"
+    image: "rabbitmq:management"
     ports:
       - "15672:15672"
       - "5672:5672"

@@ -1,4 +1,8 @@
+import asyncio
+from datetime import timedelta
+
 import openpyxl
+from celery import Celery
 
 from app.repository.admin import (
     create_dish,
@@ -80,8 +84,6 @@ async def compare_data(new_data: dict[str, list]) -> dict[str, tuple[list, list]
 
 
 async def process_crud(compared_data: dict[str, tuple[list, list]]):
-    print(compared_data)
-
     for menu in compared_data['menus'][0]:
         manual_id = f'{menu[0]}'
         exists = await menu_exists(manual_id)
@@ -125,14 +127,38 @@ async def process_crud(compared_data: dict[str, tuple[list, list]]):
             await del_dish(manual_id)
 
 
-async def main():
+celery_app = Celery('admin_task')
+
+celery_app.conf.update(
+    broker_url='pyamqp://guest:guest@rabbitmq:5672//',
+    result_backend='rpc://',
+    task_serializer='json',
+    result_serializer='json',
+    accept_content=['json'],
+    timezone='Europe/Moscow',
+    enable_utc=True,
+    beat_schedule={
+        'main': {
+            'task': 'admin_task.main',
+            'schedule': timedelta(seconds=15),
+        },
+    }
+)
+
+
+async def main_async():
     new_data = await read_excel_to_data('admin/Menu.xlsx')
     compared = await compare_data(new_data)
     await process_crud(compared)
     GLOBAL_DATA.update(new_data)
 
 
-if __name__ == '__main__':
-    import asyncio
+@celery_app.task
+def main():
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(main_async())
 
-    asyncio.run(main())
+
+if __name__ == '__main__':
+    asyncio.run(main_async())
