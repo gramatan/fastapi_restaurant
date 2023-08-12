@@ -15,7 +15,7 @@ class Menu(Base):  # type: ignore
     __tablename__ = 'menus'
 
     id = Column(Integer, primary_key=True, index=True)
-    manual_id = Column(Integer, unique=True, nullable=True)
+    manual_id = Column(String, unique=True, nullable=True)
     title = Column(String, index=True)
     description = Column(String, index=True)
 
@@ -26,7 +26,7 @@ class SubMenu(Base):  # type: ignore
     __tablename__ = 'submenus'
 
     id = Column(Integer, primary_key=True, index=True)
-    manual_id = Column(Integer, nullable=True)
+    manual_id = Column(String, unique=True, nullable=True)
     title = Column(String, index=True)
     description = Column(String, index=True)
     menu_id = Column(Integer, ForeignKey('menus.id', ondelete='CASCADE'))
@@ -38,7 +38,7 @@ class Dish(Base):  # type: ignore
     __tablename__ = 'dishes'
 
     id = Column(Integer, primary_key=True, index=True)
-    manual_id = Column(Integer, nullable=True)
+    manual_id = Column(String, unique=True, nullable=True)
     title = Column(String, index=True)
     description = Column(String, index=True)
     price = Column(Numeric(precision=10, scale=2), index=True)
