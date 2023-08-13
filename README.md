@@ -7,8 +7,8 @@
 сценарий использовался в тестах: [test_api_all.py](app%2Ftests%2Ftest_api_all.py)
 * Описать ручки API в соответствий c OpenAPI - [openapi.json](openapi.json)
 * Реализовать в тестах аналог Django reverse() для FastAPI - [conftest.py](app%2Ftests%2Fconftest.py) - функция reverse_url
-
-
+* Добавить эндпоинт (GET) для вывода всех меню со всеми связанными подменю и со всеми связанными блюдами. - последний всё в том же репозитории
+[menu.py](app%2Frepository%2Fmenu.py)
 * Фоновая задача: синхронизация Excel документа и БД. - [admin_task.py](admin_task.py)
   репо к ней:[admin.py](app%2Frepository%2Fadmin.py)
 * Доступная наружу папка(имя файла - хардкод) [admin](admin)
