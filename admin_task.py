@@ -21,7 +21,7 @@ semaphore = asyncio.Semaphore(1)
 MenuType = list[tuple[int, str, str]]
 SubMenuType = list[tuple[int, int, str, str]]
 DishType = list[tuple[int, int, int, str, str, str]]
-GLOBAL_DATA: dict[str, list]
+global_data: dict[str, list]
 
 global_data_path = 'global_data.json'
 
@@ -43,9 +43,6 @@ def save_global_data(data: dict[str, list]):
             json.dump(data, f, indent=4, ensure_ascii=False)
     except Exception as e:
         print(f'Error saving global data: {e}')
-
-
-GLOBAL_DATA = load_global_data()
 
 
 async def read_excel_to_data(filename: str) -> dict[str, list]:
@@ -86,11 +83,11 @@ def get_manual_id_from_data(item, data_type):
         return None
 
 
-async def compare_data(new_data: dict[str, list]) -> dict[str, list]:
+async def compare_data(global_data: dict, new_data: dict[str, list]) -> dict[str, list]:
     result = {}
 
     for data_type in ['menus', 'submenus', 'dishes']:
-        old_manual_ids = {get_manual_id_from_data(item, data_type): item for item in GLOBAL_DATA[data_type]}
+        old_manual_ids = {get_manual_id_from_data(item, data_type): item for item in global_data[data_type]}
         new_manual_ids = {get_manual_id_from_data(item, data_type): item for item in new_data[data_type]}
 
         to_delete = [item for manual_id, item in old_manual_ids.items() if manual_id not in new_manual_ids]
@@ -162,8 +159,9 @@ async def main_async():
     """
     Основная функция, которая выполняется в Celery.
     """
+    global_data = load_global_data()
     new_data = await read_excel_to_data('admin/Menu.xlsx')
-    compared = await compare_data(new_data)
+    compared = await compare_data(global_data, new_data)
     await process_crud(compared)
 
     to_save = {
@@ -173,9 +171,6 @@ async def main_async():
     }
 
     save_global_data(to_save)
-    # debug purposes
-    # GLOBAL_DATA_test = load_global_data()
-    # print(f'global = {GLOBAL_DATA_test}')
 
 
 @celery_app.task
