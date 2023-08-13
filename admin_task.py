@@ -15,6 +15,9 @@ from app.repository.admin import (
     create_update_submenu,
 )
 
+loop = asyncio.get_event_loop()
+semaphore = asyncio.Semaphore(1)
+
 MenuType = list[tuple[int, str, str]]
 SubMenuType = list[tuple[int, int, str, str]]
 DishType = list[tuple[int, int, int, str, str, str]]
@@ -97,7 +100,7 @@ async def compare_data(new_data: dict[str, list]) -> dict[str, list]:
                      manual_id in old_manual_ids and new_item != old_manual_ids[manual_id]]
 
         result[data_type] = [to_create + to_update, to_delete]
-
+    print(result)
     return result
 
 
@@ -105,29 +108,35 @@ async def process_crud(compared_data: dict[str, list]):
     # Menus
     for menu in compared_data['menus'][0]:
         manual_id = f'{menu[0]}'
-        await create_update_menu(menu, manual_id)
+        async with semaphore:
+            await create_update_menu(menu, manual_id)
 
     for menu in compared_data['menus'][1]:
         manual_id = f'{menu[0]}'
-        await check_and_del_menu(manual_id)
+        async with semaphore:
+            await check_and_del_menu(manual_id)
 
     # Submenus
     for submenu in compared_data['submenus'][0]:
         manual_id = f'{submenu[0]}:{submenu[1]}'
-        await create_update_submenu(submenu, manual_id)
+        async with semaphore:
+            await create_update_submenu(submenu, manual_id)
 
     for submenu in compared_data['submenus'][1]:
         manual_id = f'{submenu[0]}:{submenu[1]}'
-        await check_and_del_submenu(manual_id)
+        async with semaphore:
+            await check_and_del_submenu(manual_id)
 
     # Dishes
     for dish in compared_data['dishes'][0]:
         manual_id = f'{dish[0]}:{dish[1]}:{dish[2]}'
-        await create_update_dish(dish, manual_id)
+        async with semaphore:
+            await create_update_dish(dish, manual_id)
 
     for dish in compared_data['dishes'][1]:
         manual_id = f'{dish[0]}:{dish[1]}:{dish[2]}'
-        await check_and_del_dish(manual_id)
+        async with semaphore:
+            await check_and_del_dish(manual_id)
 
 
 celery_app = Celery('admin_task')
@@ -154,7 +163,6 @@ async def main_async():
     Основная функция, которая выполняется в Celery.
     """
     new_data = await read_excel_to_data('admin/Menu.xlsx')
-    print(f'new_data = {new_data}')
     compared = await compare_data(new_data)
     await process_crud(compared)
 
@@ -164,17 +172,16 @@ async def main_async():
         'dishes': new_data['dishes']
     }
 
-    # debug purposes
     save_global_data(to_save)
-    GLOBAL_DATA_test = load_global_data()
-    print(f'global = {GLOBAL_DATA_test}')
+    # debug purposes
+    # GLOBAL_DATA_test = load_global_data()
+    # print(f'global = {GLOBAL_DATA_test}')
 
 
 @celery_app.task
 def main():
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    loop.run_until_complete(main_async())
+    result = loop.run_until_complete(main_async())
+    return result
 
 
 if __name__ == '__main__':

@@ -1,5 +1,12 @@
+from asyncio import current_task
+from contextlib import asynccontextmanager
+
 from sqlalchemy import Column, ForeignKey, Integer, Numeric, String
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.ext.asyncio import (
+    AsyncSession,
+    async_scoped_session,
+    create_async_engine,
+)
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 
 SQLALCHEMY_DATABASE_URL = 'postgresql+asyncpg://ylab:no_secure_password@db/resto'
@@ -9,6 +16,19 @@ engine = create_async_engine(SQLALCHEMY_DATABASE_URL)
 async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
 Base = declarative_base()   # type: ignore
+
+
+@asynccontextmanager
+async def scoped_session():
+    scoped_factory = async_scoped_session(
+        async_session,
+        scopefunc=current_task,
+    )
+    try:
+        async with scoped_factory() as s:
+            yield s
+    finally:
+        await scoped_factory.remove()
 
 
 class Menu(Base):  # type: ignore
