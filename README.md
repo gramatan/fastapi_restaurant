@@ -1,4 +1,16 @@
 # fastapi_restaurant
+
+## До начала
+* Реализовать вывод количества подменю и блюд для Меню через один (сложный) ORM запрос. - в репозитории menu
+[menu.py](app%2Frepository%2Fmenu.py) - orm_read_menu
+* Реализовать тестовый сценарий «Проверка кол-ва блюд и подменю в меню» из Postman с помощью pytest -
+сценарий использовался в тестах: [test_api_all.py](app%2Ftests%2Ftest_api_all.py)
+* Описать ручки API в соответствий c OpenAPI - [openapi.json](openapi.json)
+* Реализовать в тестах аналог Django reverse() для FastAPI - [conftest.py](app%2Ftests%2Fconftest.py) - функция reverse_url
+
+
+* Фоновая задача: синхронизация Excel документа и БД. - [admin_task.py](admin_task.py)
+
 ## Начало работы
 
 ### Клонирование репозитория
