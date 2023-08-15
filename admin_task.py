@@ -4,6 +4,7 @@ import os
 from datetime import timedelta
 
 import openpyxl
+import redis.asyncio as redis  # type: ignore
 from celery import Celery
 
 from app.repository.admin import (
@@ -97,7 +98,7 @@ async def compare_data(global_data: dict, new_data: dict[str, list]) -> dict[str
                      manual_id in old_manual_ids and new_item != old_manual_ids[manual_id]]
 
         result[data_type] = [to_create + to_update, to_delete]
-    print(result)
+    # print(result)
     return result
 
 
@@ -162,6 +163,13 @@ async def main_async():
     global_data = load_global_data()
     new_data = await read_excel_to_data('admin/Menu.xlsx')
     compared = await compare_data(global_data, new_data)
+    if any(any(lst) for lst in compared.values()):
+        try:
+            redis_client = redis.Redis(host='redis', port=6379, db=0)
+            await redis_client.flushdb()
+        except Exception as e:
+            print(f'Error clearing redis cache: {e}')
+
     await process_crud(compared)
 
     to_save = {
