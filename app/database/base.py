@@ -1,6 +1,7 @@
 from asyncio import current_task
 from contextlib import asynccontextmanager
 
+from decouple import config
 from sqlalchemy import Column, ForeignKey, Integer, Numeric, String
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
@@ -9,8 +10,7 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 
-SQLALCHEMY_DATABASE_URL = 'postgresql+asyncpg://ylab:no_secure_password@db/resto'
-# SQLALCHEMY_DATABASE_URL = 'postgresql+asyncpg://ylab:no_secure_password@localhost/resto'
+SQLALCHEMY_DATABASE_URL = config('SQLALCHEMY_DATABASE_URL_DOCKER')
 
 engine = create_async_engine(SQLALCHEMY_DATABASE_URL)
 async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)

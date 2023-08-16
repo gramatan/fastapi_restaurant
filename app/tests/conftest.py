@@ -1,5 +1,7 @@
 # docker
-SQLALCHEMY_DATABASE_URL = 'postgresql+asyncpg://ylab:no_secure_password@db/resto'
+from decouple import config
+
+SQLALCHEMY_DATABASE_URL = config('SQLALCHEMY_DATABASE_URL_DOCKER')
 URL = 'http://web:8000'
 
 

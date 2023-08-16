@@ -1,8 +1,11 @@
 import logging
 
+from decouple import config
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from app.database.base import Base, async_session
+
+SQLALCHEMY_DATABASE_URL_LOCAL = config('SQLALCHEMY_DATABASE_URL_LOCAL')
 
 
 async def get_db():
@@ -12,7 +15,7 @@ async def get_db():
 
 async def create_tables():
     logging.info('Creating tables')
-    SQLALCHEMY_DATABASE_URL = 'postgresql+asyncpg://ylab:no_secure_password@localhost/resto'
+    SQLALCHEMY_DATABASE_URL = SQLALCHEMY_DATABASE_URL_LOCAL
     engine = create_async_engine(SQLALCHEMY_DATABASE_URL)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
@@ -21,7 +24,7 @@ async def create_tables():
 
 async def drop_tables():
     logging.info('Dropping tables')
-    SQLALCHEMY_DATABASE_URL = 'postgresql+asyncpg://ylab:no_secure_password@localhost/resto'
+    SQLALCHEMY_DATABASE_URL = SQLALCHEMY_DATABASE_URL_LOCAL
     engine = create_async_engine(SQLALCHEMY_DATABASE_URL)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)

@@ -2,13 +2,17 @@ version: '3.8'
 
 services:
   db:
-    container_name: ylab_postgres_test
+    container_name: ${DB_CONTAINER_NAME}
     build:
       context: .
       dockerfile: Dockerfile-db
+      args:
+        - DB_NAME=${DB_NAME}
+        - DB_USER=${DB_USER}
+        - DB_PASSWORD=${DB_PASSWORD}
     restart: always
     ports:
-      - "5432:5432"
+      - "${DB_PORT}:${DB_PORT}"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ylab -d resto"]
       interval: 10s
@@ -19,11 +23,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-test
+      args:
+          - SQLALCHEMY_DATABASE_URL=${SQLALCHEMY_DATABASE_URL_DOCKER}
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     environment:
       - RUN_BACKGROUND_TASK=False
       - PYTHONPATH=/app
-      - SQLALCHEMY_DATABASE_URL=postgresql+asyncpg://ylab:no_secure_password@db/resto
+      - SQLALCHEMY_DATABASE_URL=${SQLALCHEMY_DATABASE_URL_DOCKER}
       - URL=http://web-test:8000
     ports:
       - "8000:8000"
@@ -52,7 +58,7 @@ services:
     environment:
       - RUN_BACKGROUND_TASK=False
       - PYTHONPATH=/test
-      - SQLALCHEMY_DATABASE_URL=postgresql+asyncpg://ylab:no_secure_password@db/resto
+      - SQLALCHEMY_DATABASE_URL=${SQLALCHEMY_DATABASE_URL_DOCKER}
       - URL=http://web-test:8000
     command: >
       /bin/bash -c "

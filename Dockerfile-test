@@ -7,9 +7,11 @@ WORKDIR /test
 # Copy project
 ADD . /test
 
+ARG SQLALCHEMY_DATABASE_URL_DOCKER
+
 # set environment variables
 ENV PYTHONPATH=/test
-ENV SQLALCHEMY_DATABASE_URL="postgresql+asyncpg://ylab:no_secure_password@db/resto"
+ENV SQLALCHEMY_DATABASE_URL=${SQLALCHEMY_DATABASE_URL_DOCKER}
 ENV URL="http://web-test:8000"
 
 # Install dependencies

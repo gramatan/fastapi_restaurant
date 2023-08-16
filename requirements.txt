@@ -17,3 +17,5 @@ mypy==1.4.1
 
 celery[rabbitmq]==5.3.1
 openpyxl==3.1.2
+
+python-decouple==3.8

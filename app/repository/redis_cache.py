@@ -2,11 +2,13 @@ import pickle
 from typing import Any
 
 import redis.asyncio as redis  # type: ignore
+from decouple import config
 from fastapi import BackgroundTasks, Depends
 
 
 def get_async_redis_pool():
-    return redis.from_url('redis://redis:6379/0', decode_responses=False)
+    redis_url = config('REDIS_URL', default='redis://redis:6379/0')
+    return redis.from_url(redis_url, decode_responses=False)
 
 
 async def get_async_redis_client(redis_pool: redis.Redis = Depends(get_async_redis_pool)):

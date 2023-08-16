@@ -2,15 +2,20 @@ version: '3.8'
 
 services:
   db:
-    container_name: ylab_postgres
+    container_name: ${DB_CONTAINER_NAME}
     build:
       context: .
       dockerfile: Dockerfile-db
+      args:
+        - DB_NAME=${DB_NAME}
+        - DB_USER=${DB_USER}
+        - DB_PASSWORD=${DB_PASSWORD}
     restart: always
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
+#    To have clear base on every start
+#    volumes:
+#      - postgres_data:/var/lib/postgresql/data/
     ports:
-      - "5432:5432"
+      - "${DB_PORT}:${DB_PORT}"
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ylab -d resto" ]
       interval: 10s
@@ -21,25 +26,27 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: ylab_fastapi
+      args:
+        - SQLALCHEMY_DATABASE_URL=${SQLALCHEMY_DATABASE_URL_DOCKER}
+    container_name: ${WEB_CONTAINER_NAME}
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     environment:
       - PYTHONPATH=/app
-      - SQLALCHEMY_DATABASE_URL=postgresql+asyncpg://ylab:no_secure_password@db/resto
+      - SQLALCHEMY_DATABASE_URL=${SQLALCHEMY_DATABASE_URL_DOCKER}
     volumes:
       - .:/app
     ports:
-      - "8000:8000"
+      - "${WEB_PORT}:${WEB_PORT}"
     depends_on:
       - db
 
   celery-beat:
+    container_name: ${CELERY_BEAT_CONTAINER_NAME}
     build:
       context: .
       dockerfile: Dockerfile-celery
-    container_name: ylab_celery_beat
     environment:
-      - BROKER_URL=pyamqp://guest:guest@rabbitmq:5672//
+      - BROKER_URL=${BROKER_URL}
     depends_on:
       - rabbitmq
       - db
@@ -48,14 +55,14 @@ services:
     command: [ "celery", "-A", "admin_task:celery_app", "beat", "--loglevel=info" ]
 
   celery_worker:
+    container_name: ${CELERY_WORKER_CONTAINER_NAME}
     build:
       context: .
       dockerfile: Dockerfile-celery
-    container_name: ylab_celery_worker
     volumes:
-      - /d/GitHub/fastapi_restaurant/admin:/app/admin
+      - ${ADMIN_FILE_PATH}:/app/admin
     environment:
-      - BROKER_URL=pyamqp://guest:guest@rabbitmq:5672//
+      - BROKER_URL=${BROKER_URL}
     depends_on:
       - rabbitmq
       - db
@@ -64,17 +71,17 @@ services:
     command: [ "celery", "-A", "admin_task:celery_app", "worker", "--loglevel=info", "--concurrency", "1", "-P", "solo"]
 
   rabbitmq:
-    container_name: ylab_rabbitmq
+    container_name: ${RABBITMQ_CONTAINER_NAME}
     image: "rabbitmq:management"
     ports:
-      - "15672:15672"
-      - "5672:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT}:${RABBITMQ_MANAGEMENT_PORT}"
+      - "${RABBITMQ_PORT}:${RABBITMQ_PORT}"
 
   redis:
     container_name: ylab_redis
     image: redis:latest
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT}:${REDIS_PORT}"
 
 #  redis-commander:
 #    image: rediscommander/redis-commander:latest
