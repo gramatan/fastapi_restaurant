@@ -1,5 +1,10 @@
-# docker
+import asyncio
+
+import pytest_asyncio
 from decouple import config
+from httpx import AsyncClient
+
+from app.main import app
 
 SQLALCHEMY_DATABASE_URL = config('SQLALCHEMY_DATABASE_URL_DOCKER')
 URL = 'http://web:8000'
@@ -30,3 +35,17 @@ def reverse_url(route_name: str, **kwargs) -> str:
     }
 
     return str(routes.get(route_name))
+
+
+@pytest_asyncio.fixture(scope='session')
+def event_loop():
+    loop = asyncio.get_event_loop_policy().new_event_loop()
+    yield loop
+    loop.close()
+
+
+@pytest_asyncio.fixture()
+async def client() -> AsyncClient:  # type: ignore
+    async with AsyncClient(app=app, base_url=URL) as client:
+        yield client
+        await client.aclose()
